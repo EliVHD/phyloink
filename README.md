@@ -87,7 +87,9 @@ Choose **Learn** above the canvas, then **Try six mammals**, or search your curr
 
 Ancestry activities require a declared phylogenetic basis, known tip entities and a biological root. Classification and unrooted sources remain available in the editor and Explore. The practice sample distinguishes displayed descendants from omitted members of the full source clade. Spacing and node numbers carry no distance or time meaning. Long names can use tip codes linked to the full names in the sample list; reported label conflicts need inspection.
 
-Learn is a finite demonstration of teaching possibilities, not a course or assessment system. It has no saved progress or activity files. **← Editor** discards practice state and returns to the unchanged drawing, selection, pins, QA and undo history. Use the editor for saved projects and exports. Inheritance and population labs remain future packages.
+Learn is a finite demonstration of teaching possibilities, not a course or assessment system. **Local activity scenarios → Open scenario / Save scenario** reuses a source, sample and up to 12 question setups. Use **Adapt / keep this question → Keep question** to record a pair/node, question text, layout and rotations. A scenario embeds its complete source and citations; review their terms before sharing. Learner answers and progress are excluded. See [scenario use and format](docs/LEARNING-SCENARIOS.md) and the [two adaptable demonstrations](https://github.com/EliVHD/phyloink-education/tree/main/scenarios).
+
+**← Editor** discards the temporary workspace and returns to the unchanged drawing, selection, pins, QA and undo history. Download a scenario to retain its setups. Use the editor for saved artwork projects and exports. Inheritance and population labs remain future packages; Explore consolidation and Free arrangement starting shapes are recorded in the [task plan](docs/MIGRATION.md).
 
 ## Projects and exports
 

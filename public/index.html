@@ -26,6 +26,12 @@
     <div class="learn-toolbar"><button id="learn-back" class="button">← Editor</button><div><span class="eyebrow">LEARN · TEMPORARY PRACTICE</span><h1>Read the relationships</h1></div><p>Try an idea, inspect the source, then adapt it for your own teaching.</p></div>
     <div class="learn-source"><div class="button-row"><button id="learn-current" class="button">Use current drawing’s source</button><button id="learn-demo" class="button primary">Try six mammals</button></div><h2 id="learn-source-title"></h2><p id="learn-source-summary"></p><details><summary>Evidence, citations and source terms</summary><div id="learn-source-detail"></div></details></div>
     <p id="learn-notice" class="learn-notice" role="status"></p>
+    <details class="learn-scenario" id="learn-scenario-panel"><summary>Local activity scenarios · open, adapt and save</summary>
+      <div class="button-row"><button id="learn-scenario-open" class="button">Open scenario</button><button id="learn-scenario-save" class="button">Save scenario</button></div><input id="learn-scenario-file" type="file" accept=".json" hidden>
+      <div class="learn-pair"><label>Activity title<input id="learn-scenario-title" class="full-input" maxlength="500"></label><label>Introduction<textarea id="learn-scenario-intro" class="full-input" rows="2" maxlength="10000"></textarea></label></div>
+      <label>Educator notes / adaptation ideas<textarea id="learn-scenario-notes" class="full-input" rows="2" maxlength="10000"></textarea></label>
+      <p>Notes are visible to everyone opening the file. Save includes the full source, its citations, the sample and kept question setups. It excludes learner answers, progress, editor artwork and images. Review source terms before sharing. If no questions are kept, Save records the current setup.</p><p>Changing the sample clears kept questions. To revise a question, choose it below, edit its setup and choose Keep question before saving.</p>
+    </details>
     <div class="learn-body">
       <aside class="learn-sampling" aria-label="Practice sample">
         <h2>Choose a small sample</h2><p id="learn-count"></p><ul id="learn-sample" class="learn-sample"></ul>
@@ -33,6 +39,10 @@
         <label class="check-row"><input id="learn-codes" type="checkbox"> Show T1, T2… in the drawings</label><p class="help">Tip codes refer to the names above. The sample omits other source descendants; it does not redefine complete clades.</p>
       </aside>
       <section id="learn-exercise" class="learn-exercise" aria-label="Interpretation activity">
+        <div id="learn-activity-description" hidden><h2 id="learn-activity-title"></h2><p id="learn-activity-intro"></p></div>
+        <label>Kept question<select id="learn-activity" class="full-input"><option value="">Free practice / new question</option></select></label><p id="learn-question-prompt"></p>
+        <details class="learn-question-author"><summary>Adapt / keep this question</summary><label>Question text<textarea id="learn-question-text" class="full-input" rows="2" maxlength="5000"></textarea></label>
+        <div class="button-row"><button id="learn-question-keep" class="button">Keep question</button><button id="learn-questions-clear" class="button">Clear kept questions</button></div><p id="learn-question-count" class="help"></p></details>
         <div class="learn-task-bar"><label>Try a question<select id="learn-task" class="full-input"><option value="ancestor">Find a common ancestor</option><option value="clade">Identify a clade’s displayed tips</option><option value="compare">Compare two drawings</option></select></label><button id="learn-reset-answer" class="button">Clear answer</button></div>
         <div data-learn-task="ancestor"><h2>Where do these paths first meet?</h2><p>Trace two tips toward the declared root. Choose their most recent common ancestor in the supplied tree.</p><div class="learn-pair"><label>First tip<select id="learn-first" class="full-input"></select></label><label>Second tip<select id="learn-second" class="full-input"></select></label></div></div>
         <div data-learn-task="clade" hidden><h2>Which displayed tips descend from this node?</h2><p>A complete clade includes an ancestor and all its descendants. Select every descendant shown in this practice sample.</p><div id="learn-clade-tips" class="learn-tip-choices"></div></div>
@@ -43,7 +53,7 @@
       </section>
       <div class="learn-diagrams"><figure><figcaption>1 · Original order · rectangular</figcaption><svg id="learn-left" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="First practice tree. Choose a numbered branching point."></svg></figure><figure><figcaption>2 · Same sample · try another arrangement</figcaption><svg id="learn-right" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Second practice tree. Choose a numbered branching point."></svg></figure><p id="learn-layout-note"></p><p id="learn-compare-state" class="help"></p></div>
     </div>
-    <footer class="learn-footer">Practice is temporary and stays in this browser. Returning to the editor discards the sample, answers and rotations. Saved artwork, pins, undo history and exports are unaffected. This demonstration is a starting point for educator adaptations.</footer>
+    <footer class="learn-footer">Practice is temporary and stays in this browser. Download a scenario to retain question setups; learner answers and progress are never saved. Returning to the editor discards the workspace. Saved artwork, pins, undo history and editor exports are unaffected. These demonstrations are starting points for educator adaptations.</footer>
   </main>
   <main class="workspace">
     <aside class="sidebar left-sidebar">

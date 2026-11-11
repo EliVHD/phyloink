@@ -23,7 +23,7 @@ export function renderExplore(index: ExploreIndex, frame: DetailFrame, camera: B
     return index.mode === 'rectangular' ? `M${sx(index.x[i])},${sy(index.y[a])}L${sx(index.x[i])},${sy(index.y[b])}` : `M${polar(index.radius[i], index.angle[a])}${arc(index.radius[i], index.angle[a], index.angle[b])}`;
   };
   const summary = (i: number) => {
-    const a = index.start[i] / index.tips, b = index.end[i] / index.tips;
+    const a = index.start[i] / index.slots, b = index.end[i] / index.slots;
     if (index.mode === 'rectangular') return `M${pt(i)}L${sx(1000)},${sy(a * 1000)}L${sx(1000)},${sy(b * 1000)}Z`;
     const t0 = index.angleStart + index.angleSpan * a, t1 = index.angleStart + index.angleSpan * b, r = index.radius[i];
     return `M${polar(r, t0)}L${polar(1000, t0)}${arc(1000, t0, t1)}L${polar(r, t1)}${arc(r, t1, t0)}Z`;
@@ -31,18 +31,19 @@ export function renderExplore(index: ExploreIndex, frame: DetailFrame, camera: B
   const lines: string[] = [], groups: string[] = [], marks: string[] = [], texts: string[] = [];
   for (const i of frame.nodes) {
     const d = stem(i) + (frame.expanded.has(i) ? connector(i) : '');
-    if (d) lines.push(`<path d="${d}"/>`);
-    if (frame.summaries.has(i)) groups.push(`<path class="explore-summary" data-explore-node="${i}" d="${summary(i)}"><title>Temporary display group · ${index.count[i].toLocaleString()} source tips · ${esc(index.ids[i])} · ${frame.summaries.get(i)} limit. Double-click to focus.</title></path>`);
+    if (d) lines.push(`<path data-explore-edge="${esc(index.ids[i])}" d="${d}"/>`);
+    if (frame.summaries.has(i)) groups.push(`<path class="explore-summary" data-explore-node="${i}" data-explore-id="${esc(index.ids[i])}" d="${summary(i)}"><title>Temporary viewing summary · ${index.count[i].toLocaleString()} represented source tips · ${esc(index.ids[i])} · ${frame.summaries.get(i)} limit. Double-click to focus.</title></path>`);
     const x = sx(index.x[i]), y = sy(index.y[i]);
     if (x < -6 || y < -6 || x > width + 6 || y > height + 6) continue;
-    marks.push(`<circle class="explore-node" data-explore-node="${i}" cx="${x}" cy="${y}" r="${index.count[i] === 1 ? 2.5 : 2}"><title>${esc(label(i))} · ${esc(index.ids[i])}</title></circle>`);
+    if (index.authored[i]) marks.push(`<path class="explore-authored" data-explore-node="${i}" data-explore-id="${esc(index.ids[i])}" d="M${x},${y-5}L${x+5},${y}L${x},${y+5}L${x-5},${y}Z"><title>Authored collapsed group · ${index.count[i]} represented / ${index.originalCount[i]} full-source tips · ${esc(index.ids[i])}. Zoom does not expand this group.</title></path>`);
+    else marks.push(`<circle class="explore-node" data-explore-node="${i}" data-explore-id="${esc(index.ids[i])}" cx="${x}" cy="${y}" r="${index.count[i] === 1 ? 2.5 : 2}"><title>${esc(label(i))} · ${esc(index.ids[i])}</title></circle>`);
   }
   const occupied = new Map<string, Box[]>();
   const place = (text: string, i: number, summaryLabel: boolean, priority = false) => {
     let x = sx(index.x[i]) + 8, y = sy(index.y[i]) - 7;
     // Summary labels describe a region; clamp them into the visible portion of that region.
     if (summaryLabel) {
-      const mid = (index.start[i] + index.end[i]) / (2 * index.tips);
+      const mid = (index.start[i] + index.end[i]) / (2 * index.slots);
       x = index.mode === 'rectangular' ? sx((index.x[i] + 1000) / 2) : sx((index.radius[i] + 1000) / 2 * Math.cos(index.angle[i]));
       y = index.mode === 'rectangular' ? sy(mid * 1000) : sy((index.radius[i] + 1000) / 2 * Math.sin(index.angle[i]));
       x = Math.max(8, Math.min(width - 130, x)); y = Math.max(18, Math.min(height - 8, y));
@@ -63,14 +64,20 @@ export function renderExplore(index: ExploreIndex, frame: DetailFrame, camera: B
       path += stem(i) + (index.mode === 'rectangular' ? `M${pt(p)}L${sx(index.x[p])},${sy(index.y[i])}` : `M${pt(p)}${arc(index.radius[p], index.angle[p], index.angle[i])}`);
     }
     const x = sx(index.x[selected]), y = sy(index.y[selected]);
-    marks.push(`<circle class="explore-selected" data-explore-node="${selected}" cx="${x}" cy="${y}" r="5"/>`);
+    if (index.authored[selected]) marks.push(`<path class="explore-selected-authored" data-explore-node="${selected}" d="M${x},${y-8}L${x+8},${y}L${x},${y+8}L${x-8},${y}Z"/>`);
+    else marks.push(`<circle class="explore-selected" data-explore-node="${selected}" cx="${x}" cy="${y}" r="5"/>`);
     place(label(selected), selected, false, true);
   }
-  // Selected label first, then exact group counts, then source tips and meaningful internal labels.
-  for (const i of frame.summaries.keys()) if (texts.length < LABEL_BUDGET) place(`${index.count[i].toLocaleString()} tips · group`, i, true);
-  for (const i of frame.nodes) {
+  // Selected label first, then group counts, terminal names and meaningful internal labels.
+  for (const i of frame.summaries.keys()) if (texts.length < LABEL_BUDGET) place(`${index.count[i].toLocaleString()} tips · viewing summary`, i, true);
+  for (const i of frame.nodes) if (index.authored[i] && i !== selected && texts.length < LABEL_BUDGET) place(`${label(i)} · ${index.count[i]} represented`, i, false);
+  for (const i of frame.nodes.filter(i => index.offsets[i] === index.offsets[i + 1])) {
     if (texts.length >= LABEL_BUDGET) break;
-    if (i !== selected && !frame.summaries.has(i) && (index.count[i] === 1 || !/^Source (node|group)|^Virtual traversal/.test(label(i)))) place(label(i), i, false);
+    if (i !== selected && !index.authored[i] && !frame.summaries.has(i)) place(label(i), i, false);
+  }
+  for (const i of frame.nodes.filter(i => index.offsets[i] !== index.offsets[i + 1])) {
+    if (texts.length >= LABEL_BUDGET) break;
+    if (i !== selected && !frame.summaries.has(i) && !/^Source (node|group)|^Virtual traversal/.test(label(i))) place(label(i), i, false);
   }
   return { svg: `<g class="explore-branches">${lines.join('')}</g><g>${groups.join('')}</g><path class="explore-path" d="${path}"/><g>${marks.join('')}</g><g>${texts.join('')}</g>`, labels: texts.length, paths: lines.length + groups.length + (path ? 1 : 0) };
 }

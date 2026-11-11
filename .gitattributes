@@ -1,0 +1,5 @@
+* text=auto eol=lf
+# Scientific inputs are reviewed as exact upstream bytes.
+data/** -text
+reports/source_audit.json -text
+*.png binary

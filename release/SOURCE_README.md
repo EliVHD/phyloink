@@ -1,4 +1,6 @@
-# Clade Studio
+# PhyloInk — Phylogenetic Tree Editor & Illustrator
+
+Formerly Clade Studio. This source archive preserves compatibility with existing projects. See [migration notes](docs/MIGRATION.md).
 
 > **Maintenance status:** This project is **not actively maintained**. I may work on it sporadically, if at all. If you want to improve it or need ongoing maintenance, please **fork the repository** and continue development in your fork.
 >
@@ -6,9 +8,9 @@
 
 A local browser app for turning supplied phylogenetic trees and classification hierarchies into editable drawings with sources and methods attached. Import Newick, select organisms or groups, choose a layout, refine and export SVG artwork.
 
-The app runs locally without accounts, a backend or file uploads. Relationships come from the supplied tree; there is no online organism lookup or relationship inference. Version 0.1.1 is a maintenance prerelease.
+The app runs locally without accounts, a backend or file uploads. Relationships come from the supplied tree; there is no online organism lookup or relationship inference. Version 0.1.2-dev.0 is an unreleased development build. Historical Clade Studio release archives keep their original names.
 
-Repository: [EliVHD/clade-studio](https://github.com/EliVHD/clade-studio).
+Repository: [EliVHD/phyloink](https://github.com/EliVHD/phyloink).
 
 ## Quick start
 
@@ -69,3 +71,7 @@ Release files are created under `outputs/releases/`; no GitHub publication occur
 Original software and documentation: [0BSD](LICENSE). Bundled sources include Hug (2016, CC BY 4.0), Upham mammals (2019, CC0), dos Reis primates (2018, CC0) and Kew release 4.0 plants (CC BY 4.0). Each has source-specific credits and limitations. See [REDISTRIBUTION.md](REDISTRIBUTION.md), [release/components.json](release/components.json) and `release-manifest.json` for exact file-level terms and hashes.
 
 No private reference photographs, research PDFs, installed development tools or personal projects are included. Check rights to your own inputs before sharing project files.
+
+## Teaching resources
+
+Both guides stay here: the usage guide at public/guide.html and the canonical Teacher’s Guide at docs/teachers-guide.md. The build produces the offline teachers-guide.html page. Adaptable example materials and the Newick source directory are in https://github.com/EliVHD/phyloink-education. They form a finite showcase, not a complete course or a promise of recurring updates.

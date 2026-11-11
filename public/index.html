@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A local phylogenetic tree editor with reproducible clade reduction and editable scientific artwork.">
-  <title>Clade Studio — Phylogenetic tree editor</title>
+  <meta name="description" content="PhyloInk is a free, open-source phylogenetic tree editor and illustrator. Explore Newick trees and create scientific illustrations locally, with sources preserved.">
+  <title>PhyloInk — Phylogenetic Tree Editor &amp; Illustrator</title>
   <link rel="stylesheet" href="/style.css">
   <script type="module" src="/app/app.js"></script>
 </head>
 <body>
   <header class="app-header">
-    <a class="brand" href="/" aria-label="Clade Studio home"><svg viewBox="0 0 30 34" aria-hidden="true"><path d="M15 31V21M15 21L6 13V5M15 21L24 13V5M6 13L1 9M24 13L29 9M15 21V10L10 5M15 10L20 5"/></svg><span>Clade<span class="brand-light"> Studio</span><small>PHYLOGENY → FORM</small></span></a>
+    <a class="brand" href="/" aria-label="PhyloInk home"><svg viewBox="0 0 30 34" aria-hidden="true"><path d="M15 31V21M15 21L6 13V5M15 21L24 13V5M6 13L1 9M24 13L29 9M15 21V10L10 5M15 10L20 5"/></svg><span>Phylo<span class="brand-light">Ink</span><small>PHYLOGENETIC TREE EDITOR &amp; ILLUSTRATOR</small></span></a>
     <div class="header-meta"><span class="local-dot"></span> LOCAL WORKSPACE <span class="separator">/</span><span id="source-name">Loading source…</span></div>
-    <div class="header-actions"><a id="guide-link" class="button quiet" href="/guide.html" target="_blank" rel="noopener">Guide</a><button id="datasets-btn" class="button quiet">Datasets</button><button id="import-btn" class="button quiet">Open file</button><button id="save-btn" class="button">Save project</button><button id="export-btn" class="button primary">Export package <span>↗</span></button></div>
+    <div class="header-actions"><a id="guide-link" class="button quiet" href="/guide.html" target="_blank" rel="noopener">Guides</a><button id="datasets-btn" class="button quiet">Datasets</button><button id="import-btn" class="button quiet">Open file</button><button id="save-btn" class="button">Save project</button><button id="export-btn" class="button primary">Export package <span>↗</span></button></div>
     <input id="file-input" type="file" accept=".nwk,.newick,.tree,.txt,.json" hidden>
   </header>
   <main id="explore-view" class="explore-shell" hidden aria-label="Read-only source explorer">

@@ -301,13 +301,13 @@ function download(name: string, data: string | Uint8Array, type: string): void {
 function snapshot(): Project { commitOpacity(); validateDesign(project.design, rooted); return { ...structuredClone(project), recipe: savedRecipe(), selection: [...selected] }; }
 async function exportPackage(): Promise<void> {
   if(!structuredController.enabled&&view==='scientific')throw new Error('Topology inspection uses normalized spacing. Return to Free arrangement or an accepted Layout view to export that design.');
-  if(structuredController.enabled){if(!structuredController.exportable)throw new Error('Accept a current structured layout before exporting.');const state=snapshot();if(!hasAuthoring(state))throw new Error('Missing document.');const files=exportStructuredFiles(source,state,exportingBuild);files['build-manifest.json']=JSON.stringify(exportingBuildManifest,null,2);addArtifactManifest(files,state);download(`clade-studio-${structuredController.view!.intent}-${structuredController.qaFor(structuredController.view!).status}.zip`,zipFiles(files),'application/zip');toast('Structured package exported with source paths, represented/omitted memberships, exact scene and Sources & Methods.');return;}
+  if(structuredController.enabled){if(!structuredController.exportable)throw new Error('Accept a current structured layout before exporting.');const state=snapshot();if(!hasAuthoring(state))throw new Error('Missing document.');const files=exportStructuredFiles(source,state,exportingBuild);files['build-manifest.json']=JSON.stringify(exportingBuildManifest,null,2);addArtifactManifest(files,state);download(`phyloink-${structuredController.view!.intent}-${structuredController.qaFor(structuredController.view!).status}.zip`,zipFiles(files),'application/zip');toast('Structured package exported with source paths, represented/omitted memberships, exact scene and Sources & Methods.');return;}
   toast('Checking the artwork and assembling the export package…');
   const result = qa ?? await runValidation(); if (!result) return;
   const state = snapshot(), files = exportFiles(source, rooted, reduction, state, result, exportingBuild);
   files['build-manifest.json'] = JSON.stringify(exportingBuildManifest, null, 2);
   if (hasAuthoring(state)) addArtifactManifest(files, state);
-  download(`clade-studio-${result.status}-${reduction.frontier.length}.zip`, zipFiles(files), 'application/zip');
+  download(`phyloink-${result.status}-${reduction.frontier.length}.zip`, zipFiles(files), 'application/zip');
   toast(`${result.status === 'checked' ? 'Checked' : 'Draft'} package exported: paired SVGs, source, recipe, mappings, legend, project, and QA report.`);
 }
 async function importFile(file: File): Promise<void> {

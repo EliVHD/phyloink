@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, writeFile, rm, symlink } from 'node:fs/promises';
+import { mkdtemp, mkdir, writeFile, rm, symlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
@@ -30,7 +30,10 @@ test('renaming or embedding excluded bytes does not evade content checking', () 
   await assert.rejects(checkDistribution(root, ['app.js'], hashes), /Embedded excluded reference/);
 }));
 test('distribution cannot include a symlink to private files', () => fixture(async root => {
-  await writeFile(join(root, 'private.txt'), 'private');
-  await symlink(join(root, 'private.txt'), join(root, 'app.js'));
-  await assert.rejects(checkDistribution(root, ['private.txt', 'app.js']), /symlinks/);
+  await mkdir(join(root, 'private'));
+  await writeFile(join(root, 'private', 'secret.txt'), 'private');
+  // Directory junctions exercise the same lstat rejection without requiring
+  // Windows Developer Mode or elevated file-symlink privileges.
+  await symlink(join(root, 'private'), join(root, 'app.js'), process.platform === 'win32' ? 'junction' : 'dir');
+  await assert.rejects(checkDistribution(root, ['private/secret.txt', 'app.js']), /symlinks/);
 }));

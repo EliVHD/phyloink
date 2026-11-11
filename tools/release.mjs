@@ -1,6 +1,6 @@
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
-import { checkDistribution } from './distribution-policy.mjs';
+import { checkDistribution, runtimeGeneratedFiles } from './distribution-policy.mjs';
 import { loadReleaseReview, readRegular, releaseManifest, verifyReleaseFiles, verifyBuildInputs, sha256 } from './release-manifest.mjs';
 import { verifyBuildIdentity } from '../src/provenance/identity.ts';
 import { zipFiles } from '../src/export.ts';
@@ -17,12 +17,12 @@ for (const file of build.files) {
   const bytes = await readRegular('dist', file.path);
   if (bytes.length !== file.bytes || sha256(bytes) !== file.sha256) throw new Error(`Rebuild before packaging: ${file.path}`);
 }
-const browserOrigin = path => path.startsWith('app/') ? `src/${path.slice(4, -3)}.ts`
+const browserOrigin = path => runtimeGeneratedFiles.find(file => file.path === path)?.origin ?? (path.startsWith('app/') ? `src/${path.slice(4, -3)}.ts`
   : path.startsWith('data/') ? path
   : path === 'LICENSE' ? 'LICENSE'
   : path === 'REDISTRIBUTION.md' ? path
   : ['build-info.json', 'build-manifest.json', 'build-inputs.json', 'redistribution.json'].includes(path) ? 'tools/build.mjs'
-  : `public/${path}`;
+  : `public/${path}`);
 const browser = await Promise.all(browserPaths.map(async path => ({ path, origin: browserOrigin(path), bytes: await readRegular('dist', path) })));
 const source = await Promise.all([...context.index.keys()].map(async origin => ({ path: origin === 'release/SOURCE_README.md' ? 'README.md' : origin, origin, bytes: await readRegular('.', origin) })));
 // Retain the README template too so source archives can reproduce themselves.
@@ -42,7 +42,7 @@ for (const [profile, entries] of [['browser', browser], ['source', source]]) {
     await writeFile(join(staging, 'release-manifest.json'), texts['release-manifest.json']);
     await checkDistribution(staging, Object.keys(texts));
     await verifyReleaseFiles(staging, manifest);
-    const archive = `outputs/releases/clade-studio-${context.pkg.version}-${profile}.zip`;
+    const archive = `outputs/releases/phyloink-${context.pkg.version}-${profile}.zip`;
     const zip = zipFiles(Object.fromEntries(Object.entries(texts).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)));
     await writeFile(archive, zip);
     await writeFile(`${archive}.sha256`, `${sha256(zip)}  ${archive.split('/').at(-1)}\n`);

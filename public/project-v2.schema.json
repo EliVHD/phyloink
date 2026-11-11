@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Clade Studio project V2 \u2014 M0 supported profile",
+  "title": "PhyloInk project V2 \u2014 M0 supported profile",
   "description": "Structural contract for the current serializer. The runtime additionally verifies source SHA256, recipe replay, topology, geometry incidence, safe image encoding, citation identity, method digests and contribution dependencies. Future layout adapters and selected-taxon projection are not supported by this profile.",
   "type": "object",
   "properties": {

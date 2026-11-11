@@ -1,6 +1,6 @@
-# Redistribution of Clade Studio
+# Redistribution of PhyloInk
 
-The original Clade Studio software, tests, build scripts and original documentation are offered under **0BSD**, in [LICENSE](LICENSE). This grant adds no attribution, noncommercial, source-disclosure or share-alike condition. It applies to our contributions, not to separately identified third-party material. The complete distribution is a collection with component-specific terms, not a blanket relicensing of all files.
+The original PhyloInk software, tests, build scripts and original documentation are offered under **0BSD**, in [LICENSE](LICENSE). This grant adds no attribution, noncommercial, source-disclosure or share-alike condition. It applies to our contributions, not to separately identified third-party material. The complete distribution is a collection with component-specific terms, not a blanket relicensing of all files.
 
 ## What the current bundles contain
 
@@ -14,7 +14,7 @@ The original Clade Studio software, tests, build scripts and original documentat
 | TypeScript and Node type packages | Declared build dependencies, not bundled runtime code. The lockfile records Apache-2.0 and MIT packages. Their full license/NOTICE requirements must be reviewed again if a future release vendors the tools. |
 | Node.js, a browser, optional Biopython checks, D3, ggtree, iTOL, external provider datasets and reference pictures | Not included in either current release archive. No rights to these are granted by the application license. |
 
-Hug LA et al., *A new view of the tree of life*, Nature Microbiology 1, 16048 (2016), [DOI and supplements](https://doi.org/10.1038/nmicrobiol.2016.48). The exact Newick source is unchanged. Clade Studio can root, collapse, correct displayed names separately and draw new geometry; these transformations must remain distinguishable from the original data. The publisher's grant is the current reuse basis, not a separate written confirmation about the supplement.
+Hug LA et al., *A new view of the tree of life*, Nature Microbiology 1, 16048 (2016), [DOI and supplements](https://doi.org/10.1038/nmicrobiol.2016.48). The exact Newick source is unchanged. PhyloInk can root, collapse, correct displayed names separately and draw new geometry; these transformations must remain distinguishable from the original data. The publisher's grant is the current reuse basis, not a separate written confirmation about the supplement.
 
 See [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) and its [legal terms](https://creativecommons.org/licenses/by/4.0/legalcode.en), including warranty disclaimers. The license does not require the software itself to be published under CC BY. The [Creative Commons collection guidance](https://creativecommons.org/faq/#if-i-create-a-collection-that-includes-a-work-offered-under-a-cc-license-which-licenses-may-i-choose-for-the-collection) explains that included works retain their own terms. The [OSI 0BSD text](https://opensource.org/license/0bsd) is the basis for the original software grant.
 

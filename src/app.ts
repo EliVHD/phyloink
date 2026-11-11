@@ -1,4 +1,6 @@
 import { ExploreController } from './explore/ui.ts';
+import { LearnController } from './learn/ui.ts';
+import { MAX_LEARN_TIPS } from './learn/model.ts';
 import { prepareLocalImport, prepareBundledDataset } from './import.ts';
 import type { PreparedImport } from './import.ts';
 import { BUNDLED_DATASETS, bundledDataset, sourceHeading } from './datasets.ts';
@@ -15,7 +17,7 @@ import type { CommandEvidence } from './provenance/operations.ts';
 import { legacyRootState, semanticCapabilities } from './model/semantics.ts';
 import { classificationSample, sampleTree } from './structured/example.ts';
 import { StructuredController } from './structured/ui.ts';
-import { effectiveViewId } from './structured/view.ts';
+import { activeStructuredView, effectiveViewId } from './structured/view.ts';
 import { exportStructuredFiles } from './structured/export.ts';
 import type { ScientificBasis } from './model/document.ts';
 import { provenanceReport, addArtifactManifest } from './export-provenance.ts';
@@ -53,6 +55,15 @@ const structuredController = new StructuredController({
   cancel:()=>{const task=workers.get('structured');if(task){task.worker.terminate();task.reject(new Error('superseded'));workers.delete('structured');}},
   toast:message=>toast(message),canWork:()=>ready&&!pendingReduction&&!pendingFit&&!fitPreview,
 });
+const learner = new LearnController({ current: () => {
+  if (!hasAuthoring(project)) throw new Error('Missing authoring state.');
+  const active = activeStructuredView(project);
+  const selection = [...new Set([...selected].flatMap(id => rooted.nodes[id]?.members ?? []))];
+  const candidates = selection.length >= 2 && selection.length <= MAX_LEARN_TIPS ? selection : active?.graph.representedTips ?? source.tips;
+  return { input: { source, root: project.recipe.root, rootState: project.authoring.root, basis: project.authoring.basis,
+    corrections: project.corrections, childOrder: active?.projection.childOrder ?? project.layout.childOrder,
+    title: project.title, references: Object.values(project.authoring.provenance.references) }, tipIds: candidates.length <= MAX_LEARN_TIPS ? candidates : [] };
+} });
 
 
 function toast(message: string, error = false): void {
@@ -105,6 +116,7 @@ function workerTask<T>(kind: 'reduce' | 'validate' | 'fit' | 'structured', paylo
 }
 async function applyRecipe(next: Recipe, message?: string): Promise<void> {
   if (explorer.active) explorer.close();
+  if (learner.active) learner.close();
   endDrag(true); commitOpacity(); clearFit();
   const version = ++scienceVersion; desiredRecipe = next; pendingReduction = true; updateButtons();
   const before = structuredClone(project); delete next.resolvedFrontierSourceNodeIds;
@@ -326,6 +338,7 @@ async function importFile(file: File): Promise<void> {
 }
 function installPrepared(prepared:Exclude<PreparedImport,{kind:'recipe'}>):void {
     if (explorer.active) explorer.close();
+    if (learner.active) learner.close();
     endDrag(true);commitOpacity();
     if(unsaved){const state=snapshot();if(!hasAuthoring(state))throw new Error('Missing document.');download('before-import.treeproject.json',serializeProject(state,exportingBuild),'application/json');}
     clearTimeout(sliderTimeout);structuredController.discard();clearFit();for(const task of workers.values()){task.worker.terminate();task.reject(new Error('superseded'));}workers.clear();
@@ -985,7 +998,7 @@ $('stage').addEventListener('wheel', event => {
   setViewBox(); $('zoom-label').textContent = `${Math.round(project.presentation.heightMm / viewBox.h * 100)}%`;
 }, { passive: false });
 window.addEventListener('keydown', event => {
-  if (explorer.active) return;
+  if (explorer.active || learner.active) return;
   const target = event.target as HTMLElement; if (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) || target.isContentEditable || !ready) return;
   if (event.code === 'Space') { spaceDown = true; event.preventDefault(); }
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') { event.preventDefault(); restoreHistory(event.shiftKey ? 'redo' : 'undo'); }
@@ -1001,6 +1014,10 @@ window.addEventListener('beforeunload', event => { if (unsaved) { event.preventD
 on('explore-view-btn', () => {
   if (!ready || importing || pendingReduction || pendingFit || fitPreview || structuredController.pending || structuredController.preview) throw new Error('Finish or discard the current preview before exploring the source.');
   explorer.open({source, root: project.recipe.root, childOrder: project.layout.childOrder, corrections: project.corrections, basis: project.authoring!.basis, rootState: project.authoring!.root, title: sourceHeading(source.sha256, project.provenance, project.authoring?.basis.name).title});
+});
+on('learn-view-btn', () => {
+  if (!ready || importing || pendingReduction || pendingFit || fitPreview || workers.size || structuredController.pending || structuredController.preview) throw new Error('Finish calculations and keep or discard the current preview before opening Learn.');
+  learner.open();
 });
 
 async function initialize(): Promise<void> {

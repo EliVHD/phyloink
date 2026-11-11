@@ -2,6 +2,8 @@
 
 ## Unreleased — 0.1.2-dev.0
 
+- Add temporary Learn practice for common ancestors, displayed clade membership and equivalent rectangular/circular drawings, with a six-mammal demo and bounded samples from current rooted phylogenies.
+- Keep practice rotations, answers and source samples separate from artwork, pins, undo, provenance and saved projects; preserve unresolved branches and distinguish full-source clades from displayed descendants.
 - Rename the application to **PhyloInk — Phylogenetic Tree Editor & Illustrator**, formerly Clade Studio.
 - Use PhyloInk naming for new export and local release archives; preserve project format discriminators, legacy build identities, source records and historical releases.
 - Record the bounded two-repository education plan and naming migration.

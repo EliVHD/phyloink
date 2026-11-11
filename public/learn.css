@@ -46,6 +46,15 @@
 .learn-notice:empty { display: none; }
 .learn-notice { border: 1px solid #b99554; background: #fff7e7; padding: 14px; border-radius: 8px; line-height: 1.55; }
 .learn-footer { margin-top: 22px; border-top: 1px solid #ccd6ca; padding: 16px 0; max-width: 1000px; font-size: 13px; line-height: 1.65; color: #52665a; }
+.learn-scenario { margin-top: 18px; padding: 16px 20px; background: #fff; border: 1px solid #d7ded5; border-radius: 10px; }
+.learn-scenario summary { cursor: pointer; font-size: 14px; }
+.learn-scenario .button-row { margin-top: 14px; }
+.learn-scenario p { font-size: 13px; line-height: 1.6; }
+.learn-scenario > label, .learn-exercise > label { display: block; margin: 12px 0; }
+.learn-shell textarea { resize: vertical; font: inherit; line-height: 1.5; }
+.learn-question-author { margin-bottom: 16px; font-size: 13px; }
+.learn-question-author summary { cursor: pointer; margin-bottom: 10px; }
+#learn-question-prompt { border-left: 3px solid #a7bea1; padding-left: 12px; }
 @media (max-width: 1300px) { .learn-diagrams { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 700px) {
   .learn-shell { padding: 14px; }

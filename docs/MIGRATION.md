@@ -30,7 +30,20 @@ Both the usage guide and Teacher's Guide belong in this repository. Complete tea
 
 A01 adds a temporary Learn workspace for tree interpretation: common ancestors, displayed clade membership, and equivalent rectangular/circular drawings with topology-preserving rotations. One six-mammal demonstration and bounded samples from educators’ current rooted sources demonstrate the approach. Answers and rotations never enter project/history/export state. This is not an ongoing lesson collection or a full course.
 
-Future packages A02–A06 remain deferred: local activity scenarios; an inheritance lab; a population evolution lab; worksheet export; and individually scoped advanced experiments. They are not current features. Reusable application code would live here; demonstration scenarios and teaching resources would live in the education repository. Each selected lab should have only a small number of adaptable demonstrations.
+| Application package | Scope and status |
+| --- | --- |
+| A01 | Temporary tree-interpretation workspace; implemented in its own draft PR. |
+| A02 | Local, versioned activity scenarios: reusable source/sample/question setups, local open/save, educator adaptation notes and two finite demonstrations in the education repository. Implemented in a separate draft change; no learner tracking or course system. |
+| A03 | Inheritance lab with a bounded set of adaptable demonstrations. Planned. |
+| A04 | Population evolution lab with a bounded set of adaptable demonstrations. Planned. |
+| A05 | Worksheet export for educators’ own material. Planned. |
+| A06 | Individually scoped advanced experiments. Planned; select each experiment explicitly. |
+| A07 | Consolidate Topology inspection into Explore. Planned. Add Complete source / Current drawing scopes; the latter respects the active accepted view’s selected taxa, collapsed groups and omitted memberships. Open at the selected identity and return without changing artwork, selection, pins, QA or history. Distinguish authored groups from temporary zoom summaries. Use clear nonmetric screen-based branches; retire the separate inspection button/generator while retaining legacy saved-coordinate compatibility. |
+| A08 | Free arrangement starting shapes. Planned. Offer a small preset selection rather than only the current tree-like initializer: tree-like, radial, fan, upright branching and horizontal forms. Preview before accepting; use the existing command/provenance/undo pipeline, preserve exact source identities and complete child subtrees, and respect pins through anchored proposals or an explicit conflict. Keep artwork placement nonmetric; show geometry findings and retain the separate scientific structured-layout tools. Do not promise arbitrary silhouette fitting from a preset. |
+
+Continue with A02, then A07 and A08 before the new biology labs (A03–A06), reducing duplicate viewing code and broadening the existing authoring workflow first. Packages remain separately reviewable. The A07/A08 plan records owner-approved additions; their application behavior has not been implemented yet.
+
+Reusable application code lives here; demonstration scenarios and teaching resources live in the education repository. Each selected lab should have only a small number of adaptable demonstrations. There is no ongoing lesson-production or support commitment.
 
 P00, P02 and P03 implement the naming/compatibility migration, canonical Teacher's Guide, and offline/print integration. P01 and P04–P08 are delivered in the companion education repository, including a dated verification record and an explicitly untested insect-source download. A01 is a separate application change stacked on the migration branch. It adds no phylogenetic inference, new scientific dataset, saved scenario format or genetics lab.
 

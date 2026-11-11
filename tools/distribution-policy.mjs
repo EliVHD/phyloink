@@ -2,7 +2,7 @@ import { lstat, readdir, readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 
-export const runtimePublicFiles = ['index.html', 'guide.html', 'style.css', 'teaching.css', 'third-party-notices.html', 'project-v2.schema.json', 'project-v3.schema.json', 'project-v4.schema.json'];
+export const runtimePublicFiles = ['index.html', 'guide.html', 'style.css', 'learn.css', 'teaching.css', 'third-party-notices.html', 'project-v2.schema.json', 'project-v3.schema.json', 'project-v4.schema.json'];
 export const runtimeGeneratedFiles = [{ path: 'teachers-guide.html', origin: 'docs/teachers-guide.md' }];
 export const runtimeDataFiles = ['source_tree.nwk', 'annotation_review.json', 'example_reduction_recipe.json', 'source_manifest.json', 'datasets/upham-2019.nwk', 'datasets/dos-reis-2018.nwk', 'datasets/kew-4-order.nwk', 'datasets/kew-4-family.nwk', 'datasets/kew-4-species.nwk', 'datasets/audit.json'];
 export const excludedReferenceHashes = new Set([

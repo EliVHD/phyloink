@@ -28,9 +28,11 @@ Both the usage guide and Teacher's Guide belong in this repository. Complete tea
 | P07 | A small annotated directory of additional Newick sources. |
 | P08 | Cross-repository verification of projects, exports, sources and print materials. |
 
-Future packages A01–A06 are deferred: a Learn workspace with tree interpretation; local activity scenarios; an inheritance lab; a population evolution lab; worksheet export; and individually scoped advanced experiments. They are not current features. Reusable application code would live here; demonstration scenarios and teaching resources would live in the education repository. Each selected lab should have only a small number of adaptable demonstrations.
+A01 adds a temporary Learn workspace for tree interpretation: common ancestors, displayed clade membership, and equivalent rectangular/circular drawings with topology-preserving rotations. One six-mammal demonstration and bounded samples from educators’ current rooted sources demonstrate the approach. Answers and rotations never enter project/history/export state. This is not an ongoing lesson collection or a full course.
 
-P00, P02 and P03 are implemented in this development change: naming/compatibility migration, canonical Teacher's Guide, and offline/print integration. P01 and P04–P08 are delivered in the companion education repository, including a dated verification record and an explicitly untested insect-source download. No application labs or new phylogenetic inference have been added.
+Future packages A02–A06 remain deferred: local activity scenarios; an inheritance lab; a population evolution lab; worksheet export; and individually scoped advanced experiments. They are not current features. Reusable application code would live here; demonstration scenarios and teaching resources would live in the education repository. Each selected lab should have only a small number of adaptable demonstrations.
+
+P00, P02 and P03 implement the naming/compatibility migration, canonical Teacher's Guide, and offline/print integration. P01 and P04–P08 are delivered in the companion education repository, including a dated verification record and an explicitly untested insect-source download. A01 is a separate application change stacked on the migration branch. It adds no phylogenetic inference, new scientific dataset, saved scenario format or genetics lab.
 
 ## Verification
 

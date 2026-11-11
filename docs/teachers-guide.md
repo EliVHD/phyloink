@@ -69,6 +69,10 @@ Instead of presenting a finished diagram, let students investigate a larger scie
 
 Students can search for organisms, navigate evolutionary groups, and explore branching relationships using the dedicated Explore view.
 
+Explore offers **Complete source** and **Current drawing** scopes. **Inspect relationships** opens the accepted drawing’s relationships at the selected identity, preserving its selected taxa and collapsed groups. Solid diamonds are authored groups and stay collapsed when zooming; dashed shaded regions are temporary viewing summaries. Search results identify tips inside authored groups and tips omitted from the sample. Use **Inspect in complete source** to investigate their exact source identities without changing the drawing.
+
+Both scopes use nonmetric viewing geometry. Root evidence and source fields remain inspectable; classification parent links and unrooted display directions do not become ancestor claims. Numeric internal labels are kept verbatim in source fields without assuming that they represent support values. Return to the editor to save or export accepted artwork. The older separate Topology inspection tab is retired; saved legacy coordinates are preserved.
+
 ### Inquiry-based lessons
 
 Create activities where students formulate questions, investigate phylogenetic relationships, and explain their conclusions using evidence from a scientific source.

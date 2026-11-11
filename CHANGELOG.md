@@ -2,6 +2,9 @@
 
 ## Unreleased — 0.1.2-dev.0
 
+- Consolidate Topology inspection into Explore with Complete source / Current drawing scopes and selected-identity navigation. Preserve accepted groups, sampled/omitted memberships, original source paths and saved scientific context.
+- Distinguish fixed authored-group diamonds from temporary zoom summaries, prioritize tip names, and retain numeric internal labels verbatim in the inspector. Keep viewing geometry independent of artwork shape, page size, taper and routing.
+- Retire the standalone inspection tab/generator while preserving legacy stored coordinates and explicit artistic adoption. A08 Free arrangement starting shapes remain the next planned package.
 - Add A02 local activity-scenario open/save with up to 12 educator-authored question setups, embedded source/citations, bounded validation and no learner-answer/progress persistence.
 - Record A07 Explore/Topology-inspection consolidation and A08 Free arrangement starting-shape presets as planned packages; their UI behavior is not implemented yet.
 - Add temporary Learn practice for common ancestors, displayed clade membership and equivalent rectangular/circular drawings, with a six-mammal demo and bounded samples from current rooted phylogenies.

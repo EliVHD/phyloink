@@ -16,63 +16,8 @@ export function orderedChildren(rooted: Rooted, layout: Layout, id: string): str
   return custom && custom.length === children.length && new Set(custom).size === children.length && custom.every(x => children.includes(x)) ? custom : children;
 }
 
-/** Ephemeral nonmetric inspection. Ordered rows and topological levels never use source lengths. */
-export function createInspectionLayout(rooted: Rooted, reduction: Reduction, p: Presentation, previous?: Layout): Layout {
-  const out: Layout = { nodes: {}, routes: {}, pinnedNodes: [], pinnedEdges: [], childOrder: structuredClone(previous?.childOrder ?? {}), mode: 'scientific' };
-  if (previous?.lineStyle) out.lineStyle = previous.lineStyle;
-  const frontier = new Set(reduction.frontier.map(entry => entry.id));
-  const terminals: string[] = [], postorder: string[] = [], heights: Record<string, number> = {};
-  const measure = (id: string): void => {
-    if (frontier.has(id)) { terminals.push(id); heights[id] = 0; }
-    else {
-      const children = orderedChildren(rooted, out, id);
-      children.forEach(measure);
-      heights[id] = 1 + children.reduce((height, child) => Math.max(height, heights[child]), 0);
-    }
-    postorder.push(id);
-  };
-  measure(rooted.rootId);
-  const maximumHeight = heights[rooted.rootId];
-  if (!maximumHeight) { out.nodes[rooted.rootId] = { x: p.widthMm / 2, y: p.heightMm / 2 }; return out; }
-
-  const widestStroke = reduction.visible.reduce((width, id) => rooted.nodes[id].parent ? Math.max(width, edgeWidth(rooted, id, p)) : width, p.strokeMm);
-  const safeMargin = widestStroke / 2 + p.toleranceMm + .5;
-  const left = Math.min(p.widthMm / 4, Math.max(p.widthMm * .08, safeMargin));
-  const right = p.widthMm - Math.min(p.widthMm / 4, Math.max(p.widthMm * .12, safeMargin));
-  const top = Math.min(p.heightMm / 4, Math.max(p.heightMm * .055, safeMargin));
-  const bottom = p.heightMm - Math.min(p.heightMm / 4, Math.max(p.heightMm * .065, safeMargin));
-  const across = right - left, rows: Record<string, number> = {};
-  const gaps = terminals.slice(1).map((id, index) => Math.max(
-    (edgeWidth(rooted, terminals[index], p) + edgeWidth(rooted, id, p)) / 2 + p.clearanceMm + 2 * p.toleranceMm,
-    p.labels ? 2.5 : 0,
-  ));
-  const requiredRows = gaps.reduce((sum, gap) => sum + gap, 0);
-  let along = 0;
-  for (let index = 0; index < terminals.length; index++) {
-    if (index) along += gaps[index - 1];
-    rows[terminals[index]] = terminals.length === 1 ? (top + bottom) / 2 : top + (bottom - top) * along / requiredRows;
-  }
-  // Convex level spacing opens late forks. A physical floor prevents very deep
-  // trees from collapsing the last levels when the page has room for them.
-  const levelGap = Math.min(across / maximumHeight, widestStroke + p.clearanceMm + 2 * p.toleranceMm);
-  for (const id of postorder) {
-    const children = orderedChildren(rooted, out, id);
-    if (!frontier.has(id)) rows[id] = children.reduce((sum, child) => sum + rows[child], 0) / children.length;
-    const remaining = Math.max(heights[id] * levelGap, across * Math.pow(heights[id] / maximumHeight, 1.6));
-    out.nodes[id] = { x: right - remaining, y: rows[id] };
-  }
-  for (const id of reduction.visible) {
-    const parent = rooted.nodes[id].parent; if (!parent) continue;
-    const a = out.nodes[parent], b = out.nodes[id];
-    // Distinct child directions begin at their shared junction. Horizontally
-    // aligned handles previously made sister strokes overlap outside that node.
-    out.routes[id] = { segments: [{ c1: lerp(a, b, 1 / 3), c2: lerp(a, b, 2 / 3), end: { ...b } }] };
-  }
-  return out;
-}
-
 export function generateLayout(rooted: Rooted, reduction: Reduction, p: Presentation, mode: Layout['mode'], previous?: Layout): Layout {
-  if (mode === 'scientific') return createInspectionLayout(rooted, reduction, p, previous);
+  if (mode === 'scientific') throw new Error('Legacy inspection coordinates are preserved, not regenerated. Make artistic before generating new geometry.');
   const out: Layout = { nodes: {}, routes: {}, pinnedNodes: [], pinnedEdges: [], childOrder: previous?.childOrder ?? {}, mode };
   if (previous?.lineStyle) out.lineStyle = previous.lineStyle;
   const frontier = new Set(reduction.frontier.map(x => x.id));

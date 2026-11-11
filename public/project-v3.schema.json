@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Clade Studio project V3 \u2014 M0b scientific-basis profile",
+  "title": "PhyloInk project V3 \u2014 M0b scientific-basis profile",
   "description": "One scientific basis per immutable imported tree. Runtime also verifies source/citation identity, geometry, basis capabilities, rights-record links, and provenance component digests. V1/V2 migrations preserve existing geometry and history; unsupported relationship/layout adapters remain unavailable.",
   "type": "object",
   "properties": {

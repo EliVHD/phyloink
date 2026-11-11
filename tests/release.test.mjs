@@ -42,11 +42,11 @@ test('release inventory records separate terms and detects changed, missing and 
   await rm(join(root, 'picture.png')); await rm(join(root, 'app.js'));
   await assert.rejects(verifyReleaseFiles(root, manifest), /inventory/);
 }));
-test('source packaging rejects both file and parent-directory symlinks', () => fixture(async root => {
+test('source packaging rejects direct and parent-directory symlinks', () => fixture(async root => {
   await mkdir(join(root, 'private'));
   await writeFile(join(root, 'private', 'secret.txt'), 'reference');
-  await symlink(join(root, 'private'), join(root, 'public'));
-  await symlink(join(root, 'private', 'secret.txt'), join(root, 'app.js'));
+  await symlink(join(root, 'private'), join(root, 'public'), process.platform === 'win32' ? 'junction' : 'dir');
+  await symlink(process.platform === 'win32' ? join(root, 'private') : join(root, 'private', 'secret.txt'), join(root, 'app.js'), process.platform === 'win32' ? 'junction' : 'file');
   await assert.rejects(readRegular(root, 'public/secret.txt'), /symlink/);
   await assert.rejects(readRegular(root, 'app.js'), /symlink/);
   await assert.rejects(readRegular(root, '../outside'), /Unsafe/);

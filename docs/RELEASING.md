@@ -1,8 +1,10 @@
-# Preparing a Clade Studio release
+# Preparing a PhyloInk release
 
-Current version: **0.1.1** · Tag: **v0.1.1** · Repository: **[EliVHD/clade-studio](https://github.com/EliVHD/clade-studio)**.
+Working development version: **0.1.2-dev.0** · Tag: **v0.1.2-dev.0** · Repository: **[EliVHD/phyloink](https://github.com/EliVHD/phyloink)**.
 
 The project is not actively maintained; a release does not promise ongoing support or a release schedule. `npm run release` only creates local files. Publishing a GitHub release requires an explicit owner request. Preserve the repository's configured visibility and all existing release tags and assets.
+
+PhyloInk was formerly Clade Studio. Existing Clade Studio 0.1.0 and 0.1.1 release tags, notes and assets retain their original names. The development version below is not a published release.
 
 ## 1. Prepare the source
 
@@ -24,10 +26,10 @@ sha256sum -c SHA256SUMS.txt
 The release command builds the app, runs the regression suite and verifies component licenses, build identity, stale inputs, exact file inventories and payload hashes. It creates:
 
 ```text
-outputs/releases/clade-studio-0.1.1-browser.zip
-outputs/releases/clade-studio-0.1.1-browser.zip.sha256
-outputs/releases/clade-studio-0.1.1-source.zip
-outputs/releases/clade-studio-0.1.1-source.zip.sha256
+outputs/releases/phyloink-0.1.2-dev.0-browser.zip
+outputs/releases/phyloink-0.1.2-dev.0-browser.zip.sha256
+outputs/releases/phyloink-0.1.2-dev.0-source.zip
+outputs/releases/phyloink-0.1.2-dev.0-source.zip.sha256
 outputs/releases/browser-manifest.json
 outputs/releases/source-manifest.json
 ```
@@ -41,16 +43,16 @@ Commit the reviewed version changes and refreshed source inventory. Build from t
 Verify the target repository and existing tags/releases before uploading. Use a new tag for each version. With the release commit checked out:
 
 ```sh
-gh release create v0.1.1 \
-  outputs/releases/clade-studio-0.1.1-browser.zip \
-  outputs/releases/clade-studio-0.1.1-browser.zip.sha256 \
-  outputs/releases/clade-studio-0.1.1-source.zip \
-  outputs/releases/clade-studio-0.1.1-source.zip.sha256 \
-  --repo EliVHD/clade-studio \
+gh release create v0.1.2-dev.0 \
+  outputs/releases/phyloink-0.1.2-dev.0-browser.zip \
+  outputs/releases/phyloink-0.1.2-dev.0-browser.zip.sha256 \
+  outputs/releases/phyloink-0.1.2-dev.0-source.zip \
+  outputs/releases/phyloink-0.1.2-dev.0-source.zip.sha256 \
+  --repo EliVHD/phyloink \
   --target "$(git rev-parse HEAD)" \
   --draft --prerelease \
-  --title "Clade Studio 0.1.1" \
-  --notes-file release/v0.1.1.md
+  --title "PhyloInk 0.1.2-dev.0" \
+  --notes-file release/v0.1.2-dev.0.md
 ```
 
 When the tag does not exist, GitHub creates it at the specified commit. If an annotated tag is prepared separately, push that exact tag and use `--verify-tag` instead. Never move an existing release tag or silently replace its downloads.
@@ -60,7 +62,7 @@ When the tag does not exist, GitHub creates it at the specified commit. If an an
 Review the draft's notes, target commit, prerelease status and four uploaded assets. Download the assets and compare their hashes with the verified local files. Only after those checks, and under the owner's release request, publish:
 
 ```sh
-gh release edit v0.1.1 --repo EliVHD/clade-studio --draft=false --prerelease
+gh release edit v0.1.2-dev.0 --repo EliVHD/phyloink --draft=false --prerelease
 ```
 
 Verify the published URL and asset sizes/hashes. Retain the prerelease classification unless the owner requests a stable release. [GitHub CLI release documentation](https://cli.github.com/manual/gh_release_create).

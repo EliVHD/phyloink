@@ -1,7 +1,8 @@
 import { dirname } from 'node:path';
 import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
-import { runtimePublicFiles, runtimeDataFiles, runtimeModuleFiles, checkDistribution } from './distribution-policy.mjs';
+import { runtimePublicFiles, runtimeGeneratedFiles, runtimeDataFiles, runtimeModuleFiles, checkDistribution } from './distribution-policy.mjs';
+import { teacherGuideHTML } from './teacher-guide.mjs';
 import { loadReleaseReview, releaseManifest, readRegular, sha256 } from './release-manifest.mjs';
 import { contentDigest } from '../src/provenance/identity.ts';
 
@@ -11,6 +12,7 @@ await rm('dist', { recursive: true, force: true });
 execFileSync(process.execPath, ['node_modules/typescript/bin/tsc'], { stdio: 'inherit' });
 await mkdir('dist/data', { recursive: true });
 for (const name of runtimePublicFiles) await cp(`public/${name}`, `dist/${name}`);
+await writeFile('dist/teachers-guide.html', teacherGuideHTML(await readFile('docs/teachers-guide.md', 'utf8')));
 await cp('LICENSE', 'dist/LICENSE');
 await cp('REDISTRIBUTION.md', 'dist/REDISTRIBUTION.md');
 for (const name of runtimeDataFiles.filter(name => name !== 'source_manifest.json')) { await mkdir(dirname(`dist/data/${name}`), { recursive: true }); await cp(`data/${name}`, `dist/data/${name}`); }
@@ -19,7 +21,7 @@ const manifest = JSON.parse(await readFile('data/source_manifest.json', 'utf8'))
 manifest.files = manifest.files.filter(file => file.file === 'data/source_tree.nwk');
 await writeFile('dist/data/source_manifest.json', JSON.stringify(manifest, null, 2) + '\n');
 const modules = await runtimeModuleFiles('src');
-const inputs = [...runtimePublicFiles.map(path => ({ path, origin: `public/${path}` })), ...runtimeDataFiles.map(name => ({ path: `data/${name}`, origin: `data/${name}` })), ...modules.map(path => ({ path, origin: `src/${path.slice(4, -3)}.ts` })), { path: 'LICENSE', origin: 'LICENSE' }, { path: 'REDISTRIBUTION.md', origin: 'REDISTRIBUTION.md' }];
+const inputs = [...runtimePublicFiles.map(path => ({ path, origin: `public/${path}` })), ...runtimeGeneratedFiles, ...runtimeDataFiles.map(name => ({ path: `data/${name}`, origin: `data/${name}` })), ...modules.map(path => ({ path, origin: `src/${path.slice(4, -3)}.ts` })), { path: 'LICENSE', origin: 'LICENSE' }, { path: 'REDISTRIBUTION.md', origin: 'REDISTRIBUTION.md' }];
 const entries = await Promise.all(inputs.map(async entry => ({ ...entry, bytes: await readRegular('dist', entry.path) })));
 const rights = { ...releaseManifest('browser-content', entries, context, null), format: 'clade-distribution-rights' };
 await writeFile('dist/redistribution.json', JSON.stringify(rights, null, 2) + '\n');

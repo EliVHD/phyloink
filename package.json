@@ -1,9 +1,9 @@
 {
-  "name": "phylogenetic-tree-studio",
-  "version": "0.1.1",
+  "name": "phyloink",
+  "version": "0.1.2-dev.0",
   "private": true,
   "type": "module",
-  "description": "Local phylogenetic reduction and vector editing with source provenance",
+  "description": "PhyloInk — Phylogenetic Tree Editor & Illustrator. Free, local Newick exploration and scientific artwork with source provenance.",
   "engines": {
     "node": ">=22.18.0"
   },

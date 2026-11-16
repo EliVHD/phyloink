@@ -3,6 +3,8 @@ import { parseNewick } from './newick.ts';
 import { orient, reduce } from './science.ts';
 import { validateGeometry } from './geometry.ts';
 import { fitSilhouette } from './fitting.ts';
+import { previewStartingShape } from './starting-shapes.ts';
+import type { StartingShape } from './starting-shapes.ts';
 import { validateLayout } from './project.ts';
 import type { Source, Recipe, Layout, Presentation, Design, FitSettings, Correction } from './types.ts';
 
@@ -16,7 +18,7 @@ import type { ProjectionSpec, StructuredSettings, TextMeasurements, RenderScene,
 
 let source: Source | null = null;
 const workerScope = globalThis as unknown as { onmessage: ((event: MessageEvent) => void) | null; postMessage: (data: unknown) => void };
-workerScope.onmessage = async (event: MessageEvent<{ id: number; baseRevision: string; viewId: string; kind: 'reduce' | 'validate' | 'fit' | 'structured'; metricSpec?:MetricSpec; classificationSpec?:ClassificationSpec; unrootedSpec?:UnrootedSpec; readabilityPolicy?:ReadabilityPolicy; projection?:ProjectionSpec; corrections?:Correction[]; settingsStructured?:StructuredSettings; measurements?:TextMeasurements; nodeOffsets?:RenderScene['nodeOffsets']; labelOffsets?:RenderScene['labelOffsets']; sourceText: string; recipe: Recipe; layout?: Layout; presentation?: Presentation; design?: Design; settings?: FitSettings }>) => {
+workerScope.onmessage = async (event: MessageEvent<{ id: number; baseRevision: string; viewId: string; kind: 'reduce' | 'validate' | 'fit' | 'starting-shape' | 'structured'; shape?:StartingShape; metricSpec?:MetricSpec; classificationSpec?:ClassificationSpec; unrootedSpec?:UnrootedSpec; readabilityPolicy?:ReadabilityPolicy; projection?:ProjectionSpec; corrections?:Correction[]; settingsStructured?:StructuredSettings; measurements?:TextMeasurements; nodeOffsets?:RenderScene['nodeOffsets']; labelOffsets?:RenderScene['labelOffsets']; sourceText: string; recipe: Recipe; layout?: Layout; presentation?: Presentation; design?: Design; settings?: FitSettings }>) => {
   const job = event.data;
   try {
     if (!source || source.text !== job.sourceText) source = await parseNewick(job.sourceText);
@@ -31,7 +33,8 @@ workerScope.onmessage = async (event: MessageEvent<{ id: number; baseRevision: s
     }
     const rooted = orient(source, job.recipe.root), reduction = reduce(source, rooted, job.recipe);
     let value: unknown;
-    if (job.kind === 'fit') {
+    if (job.kind === 'starting-shape') value = previewStartingShape(source, rooted, job.recipe, reduction, job.presentation!, job.layout!, job.shape!);
+    else if (job.kind === 'fit') {
       validateLayout(job.layout!, rooted, reduction);
       const result = fitSilhouette(rooted, reduction, job.layout!, job.presentation!, job.design!, job.settings!);
       validateLayout(result.layout, rooted, reduction);

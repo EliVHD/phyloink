@@ -54,9 +54,28 @@
 .learn-shell textarea { resize: vertical; font: inherit; line-height: 1.5; }
 .learn-question-author { margin-bottom: 16px; font-size: 13px; }
 .learn-question-author summary { cursor: pointer; margin-bottom: 10px; }
+.learn-modules { margin-bottom: 18px; }
+.learn-modules [aria-pressed=true] { background: #e7f0e2; box-shadow: inset 0 0 0 1px #426b48; }
+.inheritance-body { display: grid; grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); gap: 22px; margin-top: 22px; align-items: start; }
+.inheritance-body fieldset { margin: 14px 0; }
+.inheritance-body legend { font-size: 14px; font-weight: 600; }
+.inheritance-body .learn-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.inheritance-body .learn-pair label { min-width: 0; }
+.inheritance-table { overflow-x: auto; margin: 18px 0; }
+.inheritance-table table { width: 100%; min-width: 340px; border-collapse: collapse; font-size: 14px; }
+.inheritance-table caption { text-align: left; font-weight: 600; padding: 0 0 10px; }
+.inheritance-table th, .inheritance-table td { border: 1px solid #d7ded5; padding: 9px; text-align: center; }
+.inheritance-table th { background: #f4f7ef; }
+.inheritance-table small { display: block; font-size: 12px; font-weight: 400; margin-top: 4px; }
+.inheritance-cell { font: inherit; color: inherit; background: transparent; border: 0; width: 100%; padding: 6px 0; cursor: pointer; }
+.inheritance-cell:focus-visible { outline: 3px solid #4272a2; outline-offset: 2px; }
+.inheritance-offspring { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 8px; list-style: none; padding: 0; }
+.inheritance-offspring li { display: grid; padding: 9px; border: 1px solid #d7ded5; border-radius: 6px; font-size: 13px; gap: 5px; }
+.inheritance-offspring li span, .inheritance-offspring small { color: #52665a; font-size: 11px; }
 #learn-question-prompt { border-left: 3px solid #a7bea1; padding-left: 12px; }
 @media (max-width: 1300px) { .learn-diagrams { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 700px) {
+  .inheritance-body { grid-template-columns: minmax(0, 1fr); gap: 14px; }
   .learn-shell { padding: 14px; }
   .learn-toolbar { flex-wrap: wrap; gap: 12px; }
   .learn-toolbar p { margin: 0; max-width: none; }

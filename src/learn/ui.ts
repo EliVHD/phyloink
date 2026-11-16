@@ -10,6 +10,7 @@ import { MAX_LEARN_TIPS, checkAncestor, checkClade, commonAncestor, createLearni
 import type { LearningInput, LearningTree } from './model.ts';
 import { MAX_ACTIVITIES, MAX_SCENARIO_BYTES, activityTree, prepareScenario, scenarioFromTree, validateActivity } from './scenario.ts';
 import type { LearningActivity } from './scenario.ts';
+import { InheritanceController } from './inheritance-ui.ts';
 
 type Task = 'ancestor' | 'clade' | 'compare';
 type Selection = { input: LearningInput; tipIds: string[] };
@@ -39,9 +40,14 @@ export class LearnController {
   private activities: LearningActivity[] = [];
   private activeActivity: string | null = null;
   private rotations: string[] = [];
+  private module: 'tree' | 'inheritance' = 'tree';
+  private inheritance: InheritanceController;
 
   constructor(host: Host) {
     this.host = host;
+    this.inheritance = new InheritanceController();
+    $('learn-tree-module').onclick = () => this.showModule('tree');
+    $('learn-inheritance-module').onclick = () => this.showModule('inheritance');
     $('learn-back').onclick = () => this.close();
     $('learn-current').onclick = () => this.run(() => this.use(this.host.current()));
     $('learn-demo').onclick = () => void this.run(() => this.demo());
@@ -114,11 +120,12 @@ export class LearnController {
       $(id).addEventListener('click', choose);
       $(id).addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); choose(event); } });
     }
-    document.fonts.addEventListener('loadingdone', () => { if (this.active && this.tree) void this.draw(); });
+    document.fonts.addEventListener('loadingdone', () => { if (this.active && this.module === 'tree' && this.tree) void this.draw(); });
   }
 
   open(): void {
     this.active = true;
+    this.inheritance.reset(); this.showModule('tree');
     document.querySelector<HTMLElement>('.workspace')!.hidden = true;
     $('learn-view').hidden = false;
     for (const id of ['datasets-btn', 'import-btn', 'save-btn', 'export-btn']) $(id).hidden = true;
@@ -128,9 +135,17 @@ export class LearnController {
     this.active = false; this.sequence++; this.loadSequence++; clearTimeout(this.searchTimer);
     this.input = undefined; this.tree = this.original = undefined; this.scenes = null; this.tips = []; this.busy = false;
     this.activities = []; this.activeActivity = null; this.rotations = [];
+    this.inheritance.reset();
     $('learn-view').hidden = true; document.querySelector<HTMLElement>('.workspace')!.hidden = false;
     for (const id of ['datasets-btn', 'import-btn', 'save-btn', 'export-btn']) $(id).hidden = false;
     $('learn-view-btn').focus();
+  }
+  private showModule(module: 'tree' | 'inheritance'): void {
+    this.module = module; this.sequence++; this.loadSequence++; clearTimeout(this.searchTimer); this.setBusy(false);
+    $('learn-tree-workspace').hidden = module !== 'tree'; $('inheritance-workspace').hidden = module !== 'inheritance';
+    $('learn-tree-module').setAttribute('aria-pressed', String(module === 'tree')); $('learn-inheritance-module').setAttribute('aria-pressed', String(module === 'inheritance'));
+    $('learn-heading').textContent = module === 'tree' ? 'Read the relationships' : 'Explore inheritance';
+    if (module === 'tree' && this.tree) void this.draw();
   }
   private async run(action: () => unknown): Promise<void> {
     try { await action(); } catch (error) { if (this.active) $('learn-notice').textContent = error instanceof Error ? error.message : String(error); }
@@ -295,6 +310,7 @@ export class LearnController {
     $('learn-results').innerHTML = `<p>${page.total ? `${page.offset + 1}–${page.offset + page.results.length} of ${page.total}` : 'No'} matching tips</p>` + page.results.map(result => `<button class="search-result" data-learn-add="${esc(result.id)}" ${this.tips.includes(result.id) ? 'disabled' : ''}>${esc(result.label)}<span>${esc(result.id)} · ${this.tips.includes(result.id) ? 'already in sample' : 'add to practice sample'}</span></button>`).join('') + (page.total > 15 ? `<div class="button-row"><button class="button" data-learn-page="${Math.max(0, page.offset - 15)}" ${!page.offset ? 'disabled' : ''}>Previous</button><button class="button" data-learn-page="${page.offset + 15}" ${page.offset + 15 >= page.total ? 'disabled' : ''}>Next</button></div>` : '');
   }
   private async draw(): Promise<void> {
+    if (this.module !== 'tree') return;
     const tree = this.tree, original = this.original, sequence = ++this.sequence;
     this.scenes = null; this.paint();
     if (!tree || !original) return;

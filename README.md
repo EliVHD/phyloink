@@ -101,7 +101,11 @@ Ancestry activities require a declared phylogenetic basis, known tip entities an
 
 Learn is a finite demonstration of teaching possibilities, not a course or assessment system. **Local activity scenarios → Open scenario / Save scenario** reuses a source, sample and up to 12 question setups. Use **Adapt / keep this question → Keep question** to record a pair/node, question text, layout and rotations. A scenario embeds its complete source and citations; review their terms before sharing. Learner answers and progress are excluded. See [scenario use and format](docs/LEARNING-SCENARIOS.md) and the [two adaptable demonstrations](https://github.com/EliVHD/phyloink-education/tree/main/scenarios).
 
-**← Editor** discards the temporary workspace and returns to the unchanged drawing, selection, pins, QA and undo history. Download a scenario to retain its setups. Use the editor for saved artwork projects and exports. Inheritance and population labs remain future packages in the [task plan](docs/MIGRATION.md).
+**← Editor** discards the temporary workspace and returns to the unchanged drawing, selection, pins, QA and undo history. Download a tree scenario to retain its setups. Use the editor for saved artwork projects and exports.
+
+Choose **Learn → Inheritance lab** for two adaptable synthetic demonstrations: **Aa × Aa** and **AaBb × AaBb**. Change parent genotypes, predict an all-recessive outcome, then **Check reasoning** or **Explain cross**. Trace parental gametes in a Punnett cell and compare exact genotype/phenotype probabilities with **1–1,000 sampled offspring**. The same parents, sample size and seed reproduce the same trial; all offspring are counted and at most 64 individuals are shown. Finite samples need not match an expected ratio.
+
+The lab assumes diploid autosomal loci, equal segregation, random fertilization, complete dominance and independent assortment for two loci. It uses no genotypes from your source tree. Controls, predictions and samples are temporary, excluded from tree scenarios/projects/exports, and reset on returning to the editor. See [model, limits and verification](docs/INHERITANCE-LAB.md). Population evolution and worksheet export remain later packages in the [task plan](docs/MIGRATION.md).
 
 ## Projects and exports
 

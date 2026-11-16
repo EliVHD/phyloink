@@ -32,7 +32,8 @@
         "A01 Learn, 2026-11-11: original temporary practice model, UI, tests and guide updates; uses the separately reviewed bundled Upham source without changing its bytes or terms. No new data, third-party implementation, runtime dependency or saved project field.",
         "A02, 2026-11-11: original local scenario format, staged validation, question-setup UI and regression tests. Reuses separately reviewed sources and citations; no new data, dependency, service or project schema field.",
         "A07, 2026-11-11: original shared Explore source/accepted-drawing scopes and compact topology snapshots, retired standalone inspection initializer, preserved legacy-coordinate compatibility and regression coverage. No new data, dependencies or saved-project fields.",
-        "A08, 2026-11-16: original five-preset Free arrangement initializer, temporary worker previews, pin-conflict preservation, accepted-command provenance and regression tests. New native SVG form icons are original application UI. No new dependency, scientific input, project schema or external artwork."
+        "A08, 2026-11-16: original five-preset Free arrangement initializer, temporary worker previews, pin-conflict preservation, accepted-command provenance and regression tests. New native SVG form icons are original application UI. No new dependency, scientific input, project schema or external artwork.",
+        "A03, 2026-11-16: original bounded synthetic Mendelian one/two-locus teaching model, temporary Learn UI, two adaptable crosses and regression coverage. NHGRI and Genetics (2024) references are background links only; no article text, figures, implementation, scientific dataset or dependency is included. No project/scenario format change or learner persistence."
       ],
       "obligations": [],
       "files": [
@@ -44,6 +45,7 @@
         "REDISTRIBUTION.md",
         "data/datasets/audit.json",
         "docs/EXPLORE-CONSOLIDATION.md",
+        "docs/INHERITANCE-LAB.md",
         "docs/LEARN-VERIFICATION.md",
         "docs/LEARNING-SCENARIOS.md",
         "docs/MIGRATION.md",
@@ -84,6 +86,8 @@
         "src/geometry.ts",
         "src/import.ts",
         "src/learn/model.ts",
+        "src/learn/inheritance.ts",
+        "src/learn/inheritance-ui.ts",
         "src/learn/scenario.ts",
         "src/learn/ui.ts",
         "src/model/basis.ts",
@@ -140,6 +144,7 @@
         "tests/inspection-quality.test.ts",
         "tests/learn-scenario.test.ts",
         "tests/learn.test.ts",
+        "tests/inheritance.test.ts",
         "tests/metric.test.ts",
         "tests/project-v2.test.ts",
         "tests/readability-quality.test.ts",

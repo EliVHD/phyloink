@@ -2,20 +2,22 @@ import { bundledDataset } from '../datasets.ts';
 import { prepareBundledDataset } from '../import.ts';
 import { searchSource } from '../search.ts';
 import { displayLabel } from '../science.ts';
-import { DEFAULT_STRUCTURED, layoutCluster } from '../structured/layout.ts';
 import { sceneAnnotations, sceneArtwork } from '../structured/render.ts';
-import { validateScene } from '../structured/validate.ts';
-import type { RenderScene, StructuredSettings, TextMeasurements } from '../structured/types.ts';
+import type { RenderScene } from '../structured/types.ts';
+import { drawLearningTree } from './drawing.ts';
 import { MAX_LEARN_TIPS, checkAncestor, checkClade, commonAncestor, createLearningTree, learningAvailability, rotateLearningBranch, sameLearningRelationships } from './model.ts';
 import type { LearningInput, LearningTree } from './model.ts';
 import { MAX_ACTIVITIES, MAX_SCENARIO_BYTES, activityTree, prepareScenario, scenarioFromTree, validateActivity } from './scenario.ts';
 import type { LearningActivity } from './scenario.ts';
 import { InheritanceController } from './inheritance-ui.ts';
 import { PopulationController } from './population-ui.ts';
+import { WorksheetController } from './worksheet-ui.ts';
+import type { WorksheetCapture } from './worksheet.ts';
+import type { BuildInfo } from '../provenance/identity.ts';
 
 type Task = 'ancestor' | 'clade' | 'compare';
 type Selection = { input: LearningInput; tipIds: string[] };
-type Host = { current: () => Selection };
+type Host = { current: () => Selection; build: () => BuildInfo | null };
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 const field = (id: string) => $<HTMLSelectElement>(id);
 const esc = (s: string) => s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
@@ -44,11 +46,14 @@ export class LearnController {
   private module: 'tree' | 'inheritance' | 'population' = 'tree';
   private inheritance: InheritanceController;
   private population: PopulationController;
+  private worksheets: WorksheetController;
 
   constructor(host: Host) {
     this.host = host;
     this.inheritance = new InheritanceController();
     this.population = new PopulationController();
+    this.worksheets = new WorksheetController();
+    $('learn-worksheet').onclick = () => this.run(() => this.worksheet());
     $('learn-tree-module').onclick = () => this.showModule('tree');
     $('learn-inheritance-module').onclick = () => this.showModule('inheritance');
     $('learn-population-module').onclick = () => this.showModule('population');
@@ -136,6 +141,7 @@ export class LearnController {
     this.use(this.host.current()); $('learn-back').focus();
   }
   close(): void {
+    this.worksheets.close();
     this.active = false; this.sequence++; this.loadSequence++; clearTimeout(this.searchTimer);
     this.input = undefined; this.tree = this.original = undefined; this.scenes = null; this.tips = []; this.busy = false;
     this.activities = []; this.activeActivity = null; this.rotations = [];
@@ -152,6 +158,18 @@ export class LearnController {
     $('learn-population-module').setAttribute('aria-pressed', String(module === 'population'));
     $('learn-heading').textContent = module === 'tree' ? 'Read the relationships' : module === 'inheritance' ? 'Explore inheritance' : 'Explore population evolution';
     if (module === 'tree' && this.tree) void this.draw();
+  }
+  private worksheet(): void {
+    if (this.busy) throw new Error('Finish loading the practice setup before preparing a worksheet.');
+    if (this.module !== 'tree') {
+      this.worksheets.open({ current: this.module === 'inheritance' ? this.inheritance.worksheetCapture() : this.population.worksheetCapture(), title: this.module === 'inheritance' ? 'Inheritance worksheet' : 'Population evolution worksheet', instructions: 'Explain your reasoning. Distinguish the model assumptions, expected probabilities and finite samples.', teacherNotes: '' }, this.host.build()); return;
+    }
+    if (!this.original) throw new Error('Choose a valid rooted source and small practice sample before preparing a tree worksheet.');
+    const metadata = { title: field('learn-scenario-title').value, introduction: $<HTMLTextAreaElement>('learn-scenario-intro').value, teacherNotes: $<HTMLTextAreaElement>('learn-scenario-notes').value, tipCodes: $<HTMLInputElement>('learn-codes').checked };
+    let current: WorksheetCapture | null = null;
+    try { current = { kind: 'tree', scenario: scenarioFromTree(this.original, metadata, [this.currentQuestion()]) }; } catch (error) { if (!this.activities.length) throw error; }
+    const kept = this.activities.length ? { kind: 'tree' as const, scenario: scenarioFromTree(this.original, metadata, this.activities) } : undefined;
+    this.worksheets.open({ current, kept, title: metadata.title || 'Tree interpretation worksheet', instructions: metadata.introduction, teacherNotes: metadata.teacherNotes }, this.host.build());
   }
   private async run(action: () => unknown): Promise<void> {
     try { await action(); } catch (error) { if (this.active) $('learn-notice').textContent = error instanceof Error ? error.message : String(error); }
@@ -322,35 +340,7 @@ export class LearnController {
     if (!tree || !original) return;
     try {
       await document.fonts.ready;
-      const make = async (model: LearningTree, kind: 'rectangular' | 'circular') => {
-        const settings: StructuredSettings = { ...DEFAULT_STRUCTURED, kind, widthMm: 150, heightMm: 140, marginMm: 12, fontSizePt: 14, fontFamily: 'sans-serif', curves: false, labelPlacement: 'horizontal', innerRadiusMm: 5, outerRadiusMm: 42 };
-        const codes = $<HTMLInputElement>('learn-codes').checked;
-        const graph = codes ? { ...model.graph, nodes: Object.fromEntries(Object.entries(model.graph.nodes).map(([id, node]) => [id, { ...node, label: model.tipIds.includes(id) ? `T${model.tipIds.indexOf(id) + 1}` : node.label }])) } : model.graph;
-        await document.fonts.load(`${settings.fontSizePt}pt ${settings.fontFamily}`);
-        const context = document.createElement('canvas').getContext('2d'); if (!context) throw new Error('Browser text measurement is unavailable.');
-        context.font = `${settings.fontSizePt * 96 / 72}px ${settings.fontFamily}`; const k = 25.4 / 96, mm = settings.fontSizePt * 25.4 / 72;
-        const measurements: TextMeasurements = { fontFamily: settings.fontFamily, fontSizePt: settings.fontSizePt, fontStatus: document.fonts.check(`${settings.fontSizePt}pt ${settings.fontFamily}`) ? 'available' : 'substituted', metrics: Object.fromEntries(graph.endpoints.map(id => { const text = graph.nodes[id].label, m = context.measureText(text); return [id, { text, widthMm: Math.max(m.width, m.actualBoundingBoxLeft + m.actualBoundingBoxRight) * k, advanceMm: m.width * k, leftMm: -m.actualBoundingBoxLeft * k, rightMm: m.actualBoundingBoxRight * k, ascentMm: Math.max(m.actualBoundingBoxAscent * k, mm * .75), descentMm: Math.max(m.actualBoundingBoxDescent * k, mm * .2) }]; })) };
-        // Give branching points room without removing retained intermediate source nodes.
-        // These display-only levels carry no evolutionary distance or time meaning.
-        const height: Record<string, number> = {}, weighted: Record<string, number> = {};
-        for (const id of [...graph.order].reverse()) {
-          const children = graph.nodes[id].children;
-          height[id] = children.length ? 1 + Math.max(...children.map(child => height[child])) : 0;
-          weighted[id] = children.length ? (children.length > 1 ? 1 : .25) + Math.max(...children.map(child => weighted[child])) : 0;
-        }
-        const offsets = Object.fromEntries(graph.order.filter(id => graph.nodes[id].children.length).map(id => [id, { depth: height[id] / height[graph.rootId] - weighted[id] / weighted[graph.rootId], shift: 0 }]));
-        const scene = layoutCluster(graph, settings, measurements, offsets), qa = validateScene(graph, scene);
-        const markers = scene.junctionGlyphs.filter(glyph => model.branchIds.includes(glyph.nodeId));
-        const crowded = markers.some((a, i) => markers.slice(i + 1).some(b => Math.hypot(a.anchor.x - b.anchor.x, a.anchor.y - b.anchor.y) < 6.8));
-        const findings: string[] = [];
-        if (qa.labelCollisions) findings.push('label overlaps need review');
-        if (measurements.fontStatus !== 'available') findings.push('font substitution needs review');
-        if (!qa.incidencePassed || !qa.crossingPassed || !qa.clearancePassed) findings.push('branch attachments, contacts or tight spacing need review');
-        if (qa.limited) findings.push('geometry checks reached their work limit and are incomplete');
-        if (crowded) findings.push('node markers are close; use the node dropdown for an exact choice');
-        return { scene, findings };
-      };
-      const [left, right] = await Promise.all([make(original, 'rectangular'), make(tree, field('learn-layout').value === 'rectangular' ? 'rectangular' : 'circular')]);
+      const [left, right] = await Promise.all([drawLearningTree(original, 'rectangular', $<HTMLInputElement>('learn-codes').checked), drawLearningTree(tree, field('learn-layout').value === 'rectangular' ? 'rectangular' : 'circular', $<HTMLInputElement>('learn-codes').checked)]);
       if (!this.active || sequence !== this.sequence) return;
       this.scenes = { left: left.scene, right: right.scene };
       const findings = [left, right].flatMap((drawing, i) => drawing.findings.length ? [`Drawing ${i + 1}: ${drawing.findings.join('; ')}.`] : []);

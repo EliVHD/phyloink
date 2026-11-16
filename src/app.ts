@@ -61,7 +61,7 @@ const structuredController = new StructuredController({
   cancel:()=>{const task=workers.get('structured');if(task){task.worker.terminate();task.reject(new Error('superseded'));workers.delete('structured');}},
   toast:message=>toast(message),canWork:()=>ready&&!pendingReduction&&!pendingFit&&!fitPreview,
 });
-const learner = new LearnController({ current: () => {
+const learner = new LearnController({ build: () => exportingBuild, current: () => {
   if (!hasAuthoring(project)) throw new Error('Missing authoring state.');
   const active = activeStructuredView(project);
   const selection = [...new Set([...selected].flatMap(id => rooted.nodes[id]?.members ?? []))];

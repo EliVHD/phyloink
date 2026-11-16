@@ -2,6 +2,7 @@
 
 ## Unreleased — 0.1.2-dev.0
 
+- Add A05 Learn worksheet authoring and separate student/teacher exports with A4/Letter printing, editable prompts/text/SVG, browser-measured source figures, optional setup-derived lab data and exact source/model/hash inventories. Exclude learner responses/progress and overlays; keep editor/project/scenario state unchanged. Preserve source rights, visible draft findings and explicit teacher-reference review.
 - Add A04's bounded Learn Population evolution lab: synthetic neutral-drift and selection-with-drift demonstrations, seeded diploid allele-count trials, a no-drift reference and exact inspection of all generations. Preserve counts, explicit model/work limits and temporary isolation from tree practice, projects and exports.
 - Add A03's bounded Learn Inheritance lab: two synthetic one/two-locus crosses, editable parent genotypes, exact Punnett/genotype/phenotype probabilities, prediction explanations and reproducible samples of 1–1,000 offspring. Disclose assumptions and display limits; keep lab state outside tree scenarios, projects, exports and editor history.
 - Add A08 Free arrangement starting-shape previews: Tree-like, Radial, Fan, Upright branching and Horizontal. Compare/use/discard, cancellable work, atomic pin conflicts, one-step undo and versioned provenance preserve source relationships and hidden artwork. Keep draft geometry findings visible; presets are nonmetric starting points rather than silhouette constraints.

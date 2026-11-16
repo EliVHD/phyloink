@@ -44,6 +44,10 @@ export class InheritanceController {
     for (const id of ['inheritance-p1-b', 'inheritance-p2-b']) select(id).value = 'Bb';
     input('inheritance-size').value = '32'; input('inheritance-seed').value = '1'; this.changeCross();
   }
+  worksheetCapture(): import('./worksheet.ts').WorksheetCapture {
+    const number = (id: string) => input(id).value.trim() ? Number(input(id).value) : NaN;
+    return { kind: 'inheritance', setup: { ...this.cross.setup }, count: number('inheritance-size'), seed: number('inheritance-seed') };
+  }
   private run(action: () => void): void {
     try { $('inheritance-notice').textContent = ''; action(); }
     catch (error) { $('inheritance-notice').textContent = error instanceof Error ? error.message : String(error); }

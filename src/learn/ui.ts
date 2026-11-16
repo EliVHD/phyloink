@@ -11,6 +11,7 @@ import type { LearningInput, LearningTree } from './model.ts';
 import { MAX_ACTIVITIES, MAX_SCENARIO_BYTES, activityTree, prepareScenario, scenarioFromTree, validateActivity } from './scenario.ts';
 import type { LearningActivity } from './scenario.ts';
 import { InheritanceController } from './inheritance-ui.ts';
+import { PopulationController } from './population-ui.ts';
 
 type Task = 'ancestor' | 'clade' | 'compare';
 type Selection = { input: LearningInput; tipIds: string[] };
@@ -40,14 +41,17 @@ export class LearnController {
   private activities: LearningActivity[] = [];
   private activeActivity: string | null = null;
   private rotations: string[] = [];
-  private module: 'tree' | 'inheritance' = 'tree';
+  private module: 'tree' | 'inheritance' | 'population' = 'tree';
   private inheritance: InheritanceController;
+  private population: PopulationController;
 
   constructor(host: Host) {
     this.host = host;
     this.inheritance = new InheritanceController();
+    this.population = new PopulationController();
     $('learn-tree-module').onclick = () => this.showModule('tree');
     $('learn-inheritance-module').onclick = () => this.showModule('inheritance');
+    $('learn-population-module').onclick = () => this.showModule('population');
     $('learn-back').onclick = () => this.close();
     $('learn-current').onclick = () => this.run(() => this.use(this.host.current()));
     $('learn-demo').onclick = () => void this.run(() => this.demo());
@@ -125,7 +129,7 @@ export class LearnController {
 
   open(): void {
     this.active = true;
-    this.inheritance.reset(); this.showModule('tree');
+    this.inheritance.reset(); this.population.reset(); this.showModule('tree');
     document.querySelector<HTMLElement>('.workspace')!.hidden = true;
     $('learn-view').hidden = false;
     for (const id of ['datasets-btn', 'import-btn', 'save-btn', 'export-btn']) $(id).hidden = true;
@@ -135,16 +139,18 @@ export class LearnController {
     this.active = false; this.sequence++; this.loadSequence++; clearTimeout(this.searchTimer);
     this.input = undefined; this.tree = this.original = undefined; this.scenes = null; this.tips = []; this.busy = false;
     this.activities = []; this.activeActivity = null; this.rotations = [];
-    this.inheritance.reset();
+    this.inheritance.reset(); this.population.reset();
     $('learn-view').hidden = true; document.querySelector<HTMLElement>('.workspace')!.hidden = false;
     for (const id of ['datasets-btn', 'import-btn', 'save-btn', 'export-btn']) $(id).hidden = false;
     $('learn-view-btn').focus();
   }
-  private showModule(module: 'tree' | 'inheritance'): void {
+  private showModule(module: 'tree' | 'inheritance' | 'population'): void {
     this.module = module; this.sequence++; this.loadSequence++; clearTimeout(this.searchTimer); this.setBusy(false);
     $('learn-tree-workspace').hidden = module !== 'tree'; $('inheritance-workspace').hidden = module !== 'inheritance';
+    $('population-workspace').hidden = module !== 'population';
     $('learn-tree-module').setAttribute('aria-pressed', String(module === 'tree')); $('learn-inheritance-module').setAttribute('aria-pressed', String(module === 'inheritance'));
-    $('learn-heading').textContent = module === 'tree' ? 'Read the relationships' : 'Explore inheritance';
+    $('learn-population-module').setAttribute('aria-pressed', String(module === 'population'));
+    $('learn-heading').textContent = module === 'tree' ? 'Read the relationships' : module === 'inheritance' ? 'Explore inheritance' : 'Explore population evolution';
     if (module === 'tree' && this.tree) void this.draw();
   }
   private async run(action: () => unknown): Promise<void> {

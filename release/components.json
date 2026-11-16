@@ -33,7 +33,8 @@
         "A02, 2026-11-11: original local scenario format, staged validation, question-setup UI and regression tests. Reuses separately reviewed sources and citations; no new data, dependency, service or project schema field.",
         "A07, 2026-11-11: original shared Explore source/accepted-drawing scopes and compact topology snapshots, retired standalone inspection initializer, preserved legacy-coordinate compatibility and regression coverage. No new data, dependencies or saved-project fields.",
         "A08, 2026-11-16: original five-preset Free arrangement initializer, temporary worker previews, pin-conflict preservation, accepted-command provenance and regression tests. New native SVG form icons are original application UI. No new dependency, scientific input, project schema or external artwork.",
-        "A03, 2026-11-16: original bounded synthetic Mendelian one/two-locus teaching model, temporary Learn UI, two adaptable crosses and regression coverage. NHGRI and Genetics (2024) references are background links only; no article text, figures, implementation, scientific dataset or dependency is included. No project/scenario format change or learner persistence."
+        "A03, 2026-11-16: original bounded synthetic Mendelian one/two-locus teaching model, temporary Learn UI, two adaptable crosses and regression coverage. NHGRI and Genetics (2024) references are background links only; no article text, figures, implementation, scientific dataset or dependency is included. No project/scenario format change or learner persistence.",
+        "A04, 2026-11-16: original bounded one-locus diploid Wright–Fisher allele-count simulation, explicit relative-fitness recursion, repeatable trials, native SVG plot/exact-count inspector, two synthetic starting demonstrations and regression coverage. MIT HST.508 (2005) and Graham Coop (2013) notes are conceptual citations only; no text, figures, implementation, dataset or dependency included. No tree inference, saved lab format or learner persistence."
       ],
       "obligations": [],
       "files": [
@@ -46,6 +47,7 @@
         "data/datasets/audit.json",
         "docs/EXPLORE-CONSOLIDATION.md",
         "docs/INHERITANCE-LAB.md",
+        "docs/POPULATION-LAB.md",
         "docs/LEARN-VERIFICATION.md",
         "docs/LEARNING-SCENARIOS.md",
         "docs/MIGRATION.md",
@@ -86,6 +88,8 @@
         "src/geometry.ts",
         "src/import.ts",
         "src/learn/model.ts",
+        "src/learn/population.ts",
+        "src/learn/population-ui.ts",
         "src/learn/inheritance.ts",
         "src/learn/inheritance-ui.ts",
         "src/learn/scenario.ts",
@@ -145,6 +149,7 @@
         "tests/learn-scenario.test.ts",
         "tests/learn.test.ts",
         "tests/inheritance.test.ts",
+        "tests/population.test.ts",
         "tests/metric.test.ts",
         "tests/project-v2.test.ts",
         "tests/readability-quality.test.ts",

@@ -12,6 +12,8 @@ Open `student.html` or `teacher.html` locally and use browser Print / Save as PD
 
 A06.1 adds linkage worksheets from explicit phased parents, shared recombination percentage, sample size and seed. The phase schematic remains even when finite data are omitted. Student counts are regenerated; exact gamete/genotype references remain teacher-only. No learner state or new import format is added. See [linkage model](LINKAGE-LAB.md).
 
+A06.2 adds a bounded neutral bottleneck/recovery worksheet with a constant-size comparison. Plots and selected-generation tables disclose both size schedules; full CSV preserves every condition/trial/generation and exact N/A/a counts, with p/H derived numerically. Student files exclude the theoretical reference plot and teacher keys. Disabling data removes plots/CSV while retaining validated setup context. See [model and bounds](BOTTLENECK-LAB.md).
+
 ## Audience and state boundaries
 
 Student packages contain worksheet HTML/plain text, applicable SVG/data/source files, `context.json`, README and exact manifest. They omit the teacher reference, educator notes, teacher authoring record and teacher-only population reference plot. Teacher packages contain the separately named teacher HTML/plain text and `authoring.json` with edited prompts/options/notes. Keep them separate from student distribution. Underlying source/model data remain available for reasoning; this is not a secure assessment system.

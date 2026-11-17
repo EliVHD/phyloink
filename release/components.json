@@ -37,7 +37,8 @@
         "A04, 2026-11-16: original bounded one-locus diploid Wright–Fisher allele-count simulation, explicit relative-fitness recursion, repeatable trials, native SVG plot/exact-count inspector, two synthetic starting demonstrations and regression coverage. MIT HST.508 (2005) and Graham Coop (2013) notes are conceptual citations only; no text, figures, implementation, dataset or dependency included. No tree inference, saved lab format or learner persistence.",
         "A05, 2026-11-16: original explicit Learn worksheet authoring/preview and separate student/teacher packages, browser-measured source figures, setup-derived synthetic data, manifests and regression coverage. Reuses reviewed source/model inputs without changing bytes/rights or app project/scenario formats. No runtime dependency, article material, new empirical dataset, learner-answer persistence or course collection. User-authored worksheet text and source data retain their own rights; generated template/software contributions are original 0BSD.",
         "A06.1, 2026-11-17: original bounded synthetic two-locus phased-cross model, exact weighted gametes/offspring, seeded samples, native chromosome schematic, temporary Learn UI and explicit worksheet support. One adaptable test cross. NHGRI and MIT recitation references are background links only; no external text, figures, code, dataset or dependency is bundled. Existing independent model, project/scenario formats and scientific inputs are unchanged.",
-        "A06.2, 2026-11-17: original bounded neutral bottleneck/recovery schedule, constant-size comparison reusing the reviewed neutral model, complete seeded allele counts, native N/frequency plots and worksheet/CSV support. One adaptable synthetic example; no empirical dataset, dependency, upstream text/artwork/code, changed independent/constant-size model or project/scenario format. MIT and UC Berkeley links are background reading only. Original contributions are 0BSD."
+        "A06.2, 2026-11-17: original bounded neutral bottleneck/recovery schedule, constant-size comparison reusing the reviewed neutral model, complete seeded allele counts, native N/frequency plots and worksheet/CSV support. One adaptable synthetic example; no empirical dataset, dependency, upstream text/artwork/code, changed independent/constant-size model or project/scenario format. MIT and UC Berkeley links are background reading only. Original contributions are 0BSD.",
+        "A06.3, 2026-11-17: original bounded two-condition selection comparison reusing the unchanged reviewed diploid population model, explicit relative fitness triplets, separate seeded streams, native identical-axis plots and role-separated worksheet/full CSV support. One adaptable heterozygote-fitness example; no empirical data, dependency, upstream text/artwork/code or project/scenario format change. Coop and MIT references are background links only. Original contributions are 0BSD."
       ],
       "obligations": [],
       "files": [
@@ -192,7 +193,12 @@
         "src/learn/bottleneck-ui.ts",
         "src/learn/bottleneck-render.ts",
         "tests/bottleneck.test.ts",
-        "docs/BOTTLENECK-LAB.md"
+        "docs/BOTTLENECK-LAB.md",
+        "docs/SELECTION-COMPARISONS.md",
+        "src/learn/selection.ts",
+        "src/learn/selection-render.ts",
+        "src/learn/selection-ui.ts",
+        "tests/selection.test.ts"
       ]
     },
     {

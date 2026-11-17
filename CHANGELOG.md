@@ -2,6 +2,7 @@
 
 ## Unreleased — 0.1.2-dev.0
 
+- Add A06.3’s bounded selection comparisons: two explicit genotype-fitness triplets, shared constant-size setup, separate seeded trials, identical plot axes, exact counts and role-separated worksheets/complete CSV. One adaptable heterozygote-fitness example; distinguish relative fitness, phenotype dominance and finite versus no-drift outcomes.
 - Add A06.2’s bounded neutral bottleneck/recovery experiment: one temporary size reduction, recovery to initial N, separate constant-size trials, exact generation counts/gene diversity, native N/frequency plots and role-separated worksheet/complete CSV support. One adaptable example; preserve temporary/editor boundaries and distinguish model expectations from finite outcomes.
 - Add A06.1’s bounded Linkage & recombination experiment: explicit two-locus phased parents, shared 0–50% recombination, exact weighted probabilities, reproducible offspring, a native chromosome schematic and student/teacher worksheet support. One adaptable test cross; no distance inference, breeding system or learner persistence.
 - Add A05 Learn worksheet authoring and separate student/teacher exports with A4/Letter printing, editable prompts/text/SVG, browser-measured source figures, optional setup-derived lab data and exact source/model/hash inventories. Exclude learner responses/progress and overlays; keep editor/project/scenario state unchanged. Preserve source rights, visible draft findings and explicit teacher-reference review.

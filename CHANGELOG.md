@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased — 0.1.2-dev.0
+
+- Rename the application to **PhyloInk — Phylogenetic Tree Editor & Illustrator**, formerly Clade Studio.
+- Use PhyloInk naming for new export and local release archives; preserve project format discriminators, legacy build identities, source records and historical releases.
+- Record the bounded two-repository education plan and naming migration.
+- Add the Teacher's Guide as canonical Markdown with generated offline HTML, print styling and links from the usage guide.
+- Preserve exact scientific input bytes on Windows and make link-protection test fixtures portable using directory junctions.
+
 ## 0.1.1 — 2026-11-04
 
 - Count routing candidate enumeration against the search budget and disclose exact work/evaluation exhaustion.

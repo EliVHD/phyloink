@@ -1,4 +1,6 @@
-# Clade Studio
+# PhyloInk — Phylogenetic Tree Editor & Illustrator
+
+Formerly **Clade Studio**. The application and repository are being renamed; existing saved projects remain compatible. See the [migration notes](docs/MIGRATION.md).
 
 > **Maintenance status:** This project is **not actively maintained**. I may work on it sporadically, if at all. If you want to improve it or need ongoing maintenance, please **fork the repository** and continue development in your fork.
 >
@@ -6,13 +8,13 @@
 
 **Turn a tree into an editable, source-aware drawing.**
 
-Clade Studio is a local browser app for designing phylogenetic trees and supplied classification hierarchies. Import a Newick tree, select organisms or groups, choose a layout, refine the drawing and export SVG artwork together with its sources and methods. It is designed for teachers and anyone preparing tree figures for their own materials.
+PhyloInk is a local browser app for designing phylogenetic trees and supplied classification hierarchies. Import a Newick tree, select organisms or groups, choose a layout, refine the drawing and export SVG artwork together with its sources and methods. It is designed for teachers and anyone preparing tree figures for their own materials.
 
-The app runs on your computer, with no account, backend or file uploads. After installing the development tools and building, it works offline. Relationships come from your input: Clade Studio does not infer them or look up organisms online.
+The app runs on your computer, with no account, backend or file uploads. After installing the development tools and building, it works offline. Relationships come from your input: PhyloInk does not infer them or look up organisms online.
 
-![Clade Studio editor showing a five-tip synthetic circular cladogram, layout controls and the source inspector.](docs/screenshots/editor.png)
+![Legacy Clade Studio editor showing a five-tip synthetic circular cladogram, layout controls and the source inspector.](docs/screenshots/editor.png)
 
-*The synthetic A–E example demonstrates the editor; its relationships are invented.*
+*The screenshot records the original Clade Studio interface. The synthetic A–E example demonstrates the editor; its relationships are invented.*
 
 ## What you can do
 
@@ -22,7 +24,7 @@ The app runs on your computer, with no account, backend or file uploads. After i
 - **Refine the artwork:** adjust labels and shared junctions, pin geometry, preview readability improvements, or create a separate artistic copy. The Free arrangement workspace adds manual curves, silhouette borders and fitting.
 - **Keep the evidence:** save editable projects and export paired labeled/unlabeled SVGs with source mappings, references, Sources & Methods and geometry checks.
 
-**Version 0.1.1 is a maintenance prerelease.** Layouts and fitting can still produce drafts with overlaps or spacing issues. The app reports those findings so you can inspect and refine the result.
+**Working version: 0.1.2-dev.0.** This is an unreleased development build. The latest historical release is Clade Studio 0.1.1, a maintenance prerelease. Layouts and fitting can still produce drafts with overlaps or spacing issues. The app reports those findings so you can inspect and refine the result.
 
 ## Quick start
 
@@ -31,13 +33,13 @@ The app runs on your computer, with no account, backend or file uploads. After i
 Install **Node.js 22.18 or later** and npm. Clone the repository, then start the app:
 
 ```sh
-git clone https://github.com/EliVHD/clade-studio.git
-cd clade-studio
+git clone https://github.com/EliVHD/phyloink.git
+cd phyloink
 npm ci
 npm run dev
 ```
 
-If you downloaded the source ZIP, extract it and run the last two commands in the extracted directory. The repository and release downloads are available at [EliVHD/clade-studio](https://github.com/EliVHD/clade-studio).
+If you downloaded the source ZIP, extract it and run the last two commands in the extracted directory. The repository and release downloads are available at [EliVHD/phyloink](https://github.com/EliVHD/phyloink).
 
 Open **[http://127.0.0.1:4173](http://127.0.0.1:4173)** in your browser. The app opens with a bundled Hug et al. tree-of-life example. The server listens on your computer's loopback interface. Stop it with **Ctrl+C**.
 
@@ -45,7 +47,7 @@ Open **[http://127.0.0.1:4173](http://127.0.0.1:4173)** in your browser. The app
 
 ### From the browser release ZIP
 
-Extract `clade-studio-0.1.1-browser.zip` into a folder and serve that folder over local HTTP. For example, if Python 3 is installed:
+The historical Clade Studio 0.1.1 browser download is named `clade-studio-0.1.1-browser.zip`; new development archives use `phyloink-<version>-browser.zip`. Extract the archive into a folder and serve that folder over local HTTP. For example, if Python 3 is installed:
 
 ```sh
 cd path/to/extracted-folder
@@ -64,7 +66,9 @@ Open the same local URL above. The browser bundle needs neither Node.js nor npm.
 
 **Save before closing the tab: there is no persistent autosave.** Replacing unsaved work requests a backup download; keep that file. Undo/redo is available during the current session.
 
-For a complete walkthrough and troubleshooting, use **Guide** in the app header, or open [the bundled guide](http://127.0.0.1:4173/guide.html) while the server is running. Its source is [public/guide.html](public/guide.html).
+For controls and troubleshooting, use **Guides** in the app header or open the [offline usage guide](http://127.0.0.1:4173/guide.html) while the server is running. Its source is [public/guide.html](public/guide.html).
+
+For classroom preparation, read the [Teacher’s Guide](docs/teachers-guide.md), also bundled as an [offline page](http://127.0.0.1:4173/teachers-guide.html) with print styling. The build generates that page from the canonical Markdown. Complete example materials and the additional Newick source directory belong in [PhyloInk education](https://github.com/EliVHD/phyloink-education): a finite showcase of adaptable activities, not a full course or a scheduled content programme. Both authoritative guides remain here.
 
 ## Explore a large tree
 

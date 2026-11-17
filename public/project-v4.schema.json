@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Clade Studio V4 \u2014 structured cladograms and preserved artistic views",
+  "title": "PhyloInk V4 \u2014 structured cladograms and preserved artistic views",
   "description": "V4 adds independently saved, source-qualified selected-taxon cladograms beside unchanged artistic views. Runtime replays projections, scientific snapshots, measured cluster scenes, compound incidence, QA and provenance. Missing/unsupported relations, corruption and stale exports are rejected.",
   "type": "object",
   "properties": {

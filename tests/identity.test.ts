@@ -39,8 +39,8 @@ test('export stamp identifies the exporter without rewriting source, geometry or
   assert.equal(JSON.parse(unknown['software_build.json']).exportingBuild, null);
   const known = exportFiles(source, rooted, reduction, project, qa, info);
   assert.deepEqual(JSON.parse(known['software_build.json']).exportingBuild, info);
-  assert.match(known['README.txt'], /^Phylogenetic Tree Studio 0\.1\.1\n/);
-  assert.match(unknown['README.txt'], /^Phylogenetic Tree Studio 0\.1\.0\n/);
+  assert.match(known['README.txt'], /^PhyloInk 0\.1\.1\n/);
+  assert.match(unknown['README.txt'], /^PhyloInk 0\.1\.0\n/);
   assert.equal(JSON.parse(known['software_build.json']).authoringHistory, 'not-recorded-in-version-1');
   const group = (svg: string) => svg.match(/<g id="tree-artwork"[\s\S]*?<\/g>/)![0];
   assert.equal(group(known['tree_unlabeled.svg']), group(unknown['tree_unlabeled.svg']));

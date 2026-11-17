@@ -1,10 +1,10 @@
-# Development guidance for Clade Studio
+# Development guidance for PhyloInk
 
 This file applies to the repository. Keep it focused on durable project rules; put user-facing instructions in [README.md](README.md) and [public/guide.html](public/guide.html).
 
 ## Purpose and scope
 
-Clade Studio is a local browser authoring tool for supplied phylogenetic trees and classification hierarchies. It preserves source relationships while users select, arrange and export drawings with provenance. Teachers author their own materials.
+PhyloInk is a local browser authoring tool for supplied phylogenetic trees and classification hierarchies. It preserves source relationships while users select, arrange and export drawings with provenance. Teachers author their own materials.
 
 The project is not actively maintained; owner development may be sporadic or absent. Preserve this notice and the recommendation to maintain independent forks. Do not promise ongoing support, response times or a release schedule.
 
@@ -72,5 +72,5 @@ The development server has no automatic rebuild. Rebuild and reload after source
 - For packaging changes, run `node tests/release.test.mjs` and `node tests/distribution.test.mjs`, then build and verify the affected archive inventories. Documentation-only changes need link/inventory checks and a build if reviewed build inputs changed; they do not need new tests that repeat the prose.
 - For UI changes, exercise the affected workflow in a browser when available. Report unavailable verification accurately. Font-dependent exports and draft status need browser measurement; CLI estimates are not a substitute.
 - Update the README or offline guide when behavior changes. Report what changed, the checks performed and any unresolved limitation.
-- Follow [docs/RELEASING.md](docs/RELEASING.md) for publication. Keep the GitHub repository private under the current owner instruction. Publishing a release or changing visibility requires an explicit owner request; local packaging does neither.
+- Follow [docs/RELEASING.md](docs/RELEASING.md) for publication. Preserve the repository's configured visibility, as agreed for the PhyloInk migration. Publishing a release or changing visibility requires an explicit owner request; local packaging does neither.
 - Keep release tags and their assets tied to the reviewed commit. Later development changes do not silently replace an existing release's tag or downloads.

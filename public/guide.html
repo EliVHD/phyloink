@@ -2,22 +2,23 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Local authoring guide — Clade Studio</title>
+<title>Local authoring guide — PhyloInk</title>
 <style>
 :root{font-family:system-ui,sans-serif;color:#253c31;background:#f4f6f0;line-height:1.65}body{max-width:960px;margin:0 auto;padding:32px 24px 64px}a{color:#285e47;text-underline-offset:3px}header{display:flex;justify-content:space-between;gap:20px;align-items:center;border-bottom:1px solid #ccd5cb;padding-bottom:16px}h1,h2{line-height:1.2}h1{font-size:clamp(28px,5vw,42px);font-weight:550;margin:32px 0 12px}h2{font-size:23px;margin-top:36px}p{max-width:76ch}nav{display:flex;gap:18px;flex-wrap:wrap;margin:24px 0}.intro{font-size:19px;max-width:64ch}.card{padding:20px 24px;border:1px solid #d6ded2;background:#fff;border-radius:8px;margin:22px 0}table{width:100%;border-collapse:collapse;background:white}td,th{padding:12px;text-align:left;vertical-align:top;border-bottom:1px solid #d6ded2}th{background:#e8eee3}code{background:#e8eee3;padding:2px 5px;overflow-wrap:anywhere}li{margin:8px 0}.table-scroll{overflow-x:auto}small{color:#596c5e}a:focus-visible{outline:3px solid #497c60;outline-offset:4px}@media(max-width:560px){body{padding:20px 14px}td,th{padding:9px}.card{padding:16px}}@media print{body{background:white;padding:0}nav,.back{display:none}header{display:block}h2{break-after:avoid}.card,tr{break-inside:avoid}}
 </style>
 </head>
 <body>
-<header><strong>Clade Studio · Local authoring guide</strong><a class="back" href="/">Open editor</a></header>
+<header><strong>PhyloInk · Local authoring guide</strong><a class="back" href="/">Open editor</a></header>
 <main>
 <h1>From your data to your drawing.</h1>
 <p class="intro">Import a relation tree, search its organisms or groups, arrange the branches and export your design with its sources.</p>
+<div class="card"><strong>Teaching with PhyloInk?</strong> Open the <a href="/teachers-guide.html">Teacher’s Guide</a> for classroom setup, source interpretation, activity examples and accessibility guidance. Adaptable example materials and additional Newick sources live in the <a href="https://github.com/EliVHD/phyloink-education">education repository</a>. Both guides are available offline; external resources require internet access.</div>
 <nav aria-label="Guide sections"><a href="#import">Import</a><a href="#search">Search</a><a href="#explore">Explore</a><a href="#layout">Choose a layout</a><a href="#refine">Refine</a><a href="#export">Save &amp; export</a><a href="#troubleshoot">Troubleshoot</a></nav>
 <section id="import"><h2>Choose an offline dataset</h2>
 <p>Open <strong>Datasets</strong> in the header for the Hug tree of life, Upham mammals, dos Reis primates, and Kew release 4.0 plant trees. All are bundled locally. Kew offers order, family and sampled-species sources; these include gymnosperm outgroups. Large trees open as up to 100 collapsed overview groups with every original tip retained. Search the full source in Reduce or Layout, select the taxa needed, and choose a layout. Opening another source requests a backup download when the current canvas has unsaved changes.</p>
 <p>The header follows the selected source. Scientific basis and Source &amp; provenance show its release, evidence, limitations and reuse terms. New library trees open without a calibrated scale. Raw dated primate values are preserved without interpreting them as substitution units. Tree exports retain source-specific citations and data notices.</p>
 <h2>1. Import your tree</h2>
-<p>Use <strong>Open file</strong> for a Newick tree (<code>.nwk</code>, <code>.newick</code>, <code>.tree</code> or <code>.txt</code>), a saved Clade Studio project (<code>.json</code>) or a reduction recipe for the current source.</p>
+<p>Use <strong>Open file</strong> for a Newick tree (<code>.nwk</code>, <code>.newick</code>, <code>.tree</code> or <code>.txt</code>), a saved PhyloInk project (<code>.json</code>) or a reduction recipe for the current source.</p>
 <p>Newick describes the actual connections, not just a list of names. For example, <code>((A,B),C);</code> supplies a group containing A and B, connected with C. This is an invented example, not a statement about organisms. The tool does not look up or infer missing relationships.</p>
 <p>The file is checked before replacing the current project. Finish or discard an outstanding preview before importing. If the current project has unsaved changes, a <code>before-import.treeproject.json</code> backup download is requested before switching. Keep that file; the app has no persistent autosave or cloud storage. A rejected import leaves the current document in place.</p>
 <p>After importing, open <strong>Scientific basis · Edit</strong> below the title. Describe what the supplied connections mean and record the source or your own hierarchy's name/version. Citations describe the data you supplied; no service is contacted. Source text and original IDs stay intact.</p>
@@ -67,5 +68,5 @@
 <li><strong>Changes disappeared after closing:</strong> reopen your downloaded project or backup. There is no autosave; the browser tab alone is not a saved file.</li>
 </ul></section>
 <div class="card"><strong>A design tool with a local workflow.</strong><p>No accounts, online organism lookup, provider connections, automatic relationship inference, dating/fossil tools or trait analysis. Teachers create their own material; there are no pupil lessons or tasks.</p></div>
-</main><footer><small>Clade Studio · Original guide under 0BSD · <a href="/">Editor</a> · <a href="/third-party-notices.html">Sources &amp; licenses</a></small></footer>
+</main><footer><small>PhyloInk · Original guide under 0BSD · <a href="/">Editor</a> · <a href="/third-party-notices.html">Sources &amp; licenses</a></small></footer>
 </body></html>

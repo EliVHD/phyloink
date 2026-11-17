@@ -1,13 +1,13 @@
 {
   "format": "clade-component-review",
   "version": 1,
-  "reviewedAt": "2026-11-04",
+  "reviewedAt": "2026-11-11",
   "policy": "Use 0BSD for original software; preserve only the component-specific obligations applicable to included third-party material. No public release authorized by this local build.",
-  "reviewedDependencyLockSha256": "60b68d1e332d2cab6f4216a3c4ac0b9bce1d68d66a46aebac3957acb6248c8c7",
+  "reviewedDependencyLockSha256": "27857d703ec8ab145d9cda65ca8ee6240a0ec070156685664b14316717592061",
   "components": [
     {
       "id": "clade-original",
-      "name": "Clade Studio original software and documentation",
+      "name": "PhyloInk original software and documentation",
       "role": "original-software",
       "decision": "include",
       "licenseExpression": "0BSD",
@@ -26,17 +26,22 @@
         "First-release preparation: original changelog, maintainer release instructions and v0.1.0 release notes. Selected UI screenshots are repository documentation only; browser/source release archives remain image-free.",
         "Repository agent guidance: original development instructions in AGENTS.md, distributed with source packages under 0BSD.",
         "Geometry maintenance: original versioned validation replay, bounded routing and incidence-completeness fixes, drag QA deferral, regression fixtures and offline guidance; no new third-party material or dependencies.",
-        "0.1.1 release review: package-lock changes only application version metadata; all locked dependency versions, integrity values, licenses and development-only scope are unchanged. Original release notes add no third-party material."
+        "0.1.1 release review: package-lock changes only application version metadata; all locked dependency versions, integrity values, licenses and development-only scope are unchanged. Original release notes add no third-party material.",
+        "P00 naming migration, 2026-11-11: package name and development version metadata only; locked dependency versions, integrity values, licenses and development-only scope are unchanged. Legacy project/build/manifest identifiers and historical fixtures remain compatible.",
+        "P02/P03, 2026-11-11: incorporate and edit the user-supplied Teacher's Guide; generate offline HTML from its canonical Markdown using an original build-only renderer. No third-party runtime code or new dependency."
       ],
       "obligations": [],
       "files": [
+        ".gitattributes",
         ".gitignore",
         "AGENTS.md",
         "CHANGELOG.md",
         "LICENSE",
         "REDISTRIBUTION.md",
         "data/datasets/audit.json",
+        "docs/MIGRATION.md",
         "docs/RELEASING.md",
+        "docs/teachers-guide.md",
         "package-lock.json",
         "package.json",
         "public/guide.html",
@@ -45,11 +50,13 @@
         "public/project-v3.schema.json",
         "public/project-v4.schema.json",
         "public/style.css",
+        "public/teaching.css",
         "public/third-party-notices.html",
         "release/SOURCE_README.md",
         "release/components.json",
         "release/v0.1.0.md",
         "release/v0.1.1.md",
+        "release/v0.1.2-dev.0.md",
         "src/app.ts",
         "src/commands.ts",
         "src/datasets.ts",
@@ -137,6 +144,7 @@
         "tools/release-manifest.mjs",
         "tools/release.mjs",
         "tools/serve.mjs",
+        "tools/teacher-guide.mjs",
         "tsconfig.json"
       ]
     },

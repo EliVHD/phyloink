@@ -35,7 +35,8 @@
         "A08, 2026-11-16: original five-preset Free arrangement initializer, temporary worker previews, pin-conflict preservation, accepted-command provenance and regression tests. New native SVG form icons are original application UI. No new dependency, scientific input, project schema or external artwork.",
         "A03, 2026-11-16: original bounded synthetic Mendelian one/two-locus teaching model, temporary Learn UI, two adaptable crosses and regression coverage. NHGRI and Genetics (2024) references are background links only; no article text, figures, implementation, scientific dataset or dependency is included. No project/scenario format change or learner persistence.",
         "A04, 2026-11-16: original bounded one-locus diploid Wright–Fisher allele-count simulation, explicit relative-fitness recursion, repeatable trials, native SVG plot/exact-count inspector, two synthetic starting demonstrations and regression coverage. MIT HST.508 (2005) and Graham Coop (2013) notes are conceptual citations only; no text, figures, implementation, dataset or dependency included. No tree inference, saved lab format or learner persistence.",
-        "A05, 2026-11-16: original explicit Learn worksheet authoring/preview and separate student/teacher packages, browser-measured source figures, setup-derived synthetic data, manifests and regression coverage. Reuses reviewed source/model inputs without changing bytes/rights or app project/scenario formats. No runtime dependency, article material, new empirical dataset, learner-answer persistence or course collection. User-authored worksheet text and source data retain their own rights; generated template/software contributions are original 0BSD."
+        "A05, 2026-11-16: original explicit Learn worksheet authoring/preview and separate student/teacher packages, browser-measured source figures, setup-derived synthetic data, manifests and regression coverage. Reuses reviewed source/model inputs without changing bytes/rights or app project/scenario formats. No runtime dependency, article material, new empirical dataset, learner-answer persistence or course collection. User-authored worksheet text and source data retain their own rights; generated template/software contributions are original 0BSD.",
+        "A06.1, 2026-11-17: original bounded synthetic two-locus phased-cross model, exact weighted gametes/offspring, seeded samples, native chromosome schematic, temporary Learn UI and explicit worksheet support. One adaptable test cross. NHGRI and MIT recitation references are background links only; no external text, figures, code, dataset or dependency is bundled. Existing independent model, project/scenario formats and scientific inputs are unchanged."
       ],
       "obligations": [],
       "files": [
@@ -180,7 +181,12 @@
         "tools/release.mjs",
         "tools/serve.mjs",
         "tools/teacher-guide.mjs",
-        "tsconfig.json"
+        "tsconfig.json",
+        "src/learn/linkage.ts",
+        "src/learn/linkage-ui.ts",
+        "src/learn/linkage-render.ts",
+        "tests/linkage.test.ts",
+        "docs/LINKAGE-LAB.md"
       ]
     },
     {

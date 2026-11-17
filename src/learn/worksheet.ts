@@ -11,8 +11,11 @@ import { createMendelianCross, sampleOffspring, probabilityText, INHERITANCE_MOD
 import type { CrossSetup } from './inheritance.ts';
 import { simulatePopulation, selectedFrequency, POPULATION_MODEL } from './population.ts';
 import type { PopulationSetup, PopulationResult } from './population.ts';
+import { createLinkageCross, sampleLinkedOffspring, LINKAGE_MODEL, LINKAGE_ASSUMPTIONS, LINKAGE_REFERENCES } from './linkage.ts';
+import type { LinkageSetup } from './linkage.ts';
+import { linkageDiagram } from './linkage-render.ts';
 
-export type WorksheetCapture = { kind: 'tree'; scenario: LearningScenario } | { kind: 'inheritance'; setup: CrossSetup; count: number; seed: number } | { kind: 'population'; setup: PopulationSetup };
+export type WorksheetCapture = { kind: 'tree'; scenario: LearningScenario } | { kind: 'inheritance'; setup: CrossSetup; count: number; seed: number } | { kind: 'population'; setup: PopulationSetup } | { kind: 'linkage'; setup: LinkageSetup; count: number; seed: number };
 export type WorksheetOptions = { title: string; instructions: string; teacherNotes: string; paper: 'A4' | 'Letter'; answerLines: number; tipCodes: boolean; includeData: boolean; prompts: string[] };
 export type WorksheetAudience = 'student' | 'teacher';
 export type WorksheetQuestion = { prompt: string; context: string; answer: string; figures: { path: string; svg: string; findings: string[] }[] };
@@ -41,6 +44,7 @@ export function validateWorksheetOptions(options: WorksheetOptions, count: numbe
 export function defaultWorksheetPrompts(capture: WorksheetCapture): string[] {
   if (capture.kind === 'tree') return capture.scenario.activities.map(question => question.prompt);
   if (capture.kind === 'inheritance') return ['List each parent’s possible gametes and their probabilities.', 'Predict the all-recessive phenotype’s probability. Explain the difference between genotype and complete-dominance phenotype probabilities.', 'Compare expected probabilities with a reproducible offspring sample. Why need the sampled counts not match a ratio exactly?'];
+  if (capture.kind === 'linkage') return ['Predict each parent’s gametes and probabilities. Which marker types are parental or recombinant?', 'Predict offspring genotypes and phenotypes. What can a double-recessive test cross reveal?', 'Compare phases at r = 10% and 50%. Why can finite counts differ from expectations?'];
   return ['Predict A frequency after one generation’s selection, before finite sampling. Explain what the relative genotype fitness weights mean.', 'Compare the finite-population trials across generations. What do they show about chance, loss or fixation at this locus?', 'Compare with the no-drift reference or a matched equal-fitness run. Why can a few paths not establish selection or estimate fixation probability?'];
 }
 function staticTreeFigure(tree: LearningTree, drawing: LearningDrawing, id: string, paper: 'A4' | 'Letter'): string {
@@ -103,6 +107,19 @@ export async function prepareWorksheet(capture: WorksheetCapture, options: Works
     if (options.includeData) result.studentData = rowTable(`Observed synthetic counts · n = ${sample.count} · seed ${sample.seed}`, ['Genotype', 'Count'], sample.genotypes.map(row => [row.label, row.count])) + rowTable('Observed complete-dominance phenotype counts', ['Phenotype', 'Count'], sample.phenotypes.map(row => [row.label, row.count]));
     result.teacherData = result.studentData + rowTable('Expected probabilities · reference only', ['Genotype', 'Probability', 'Expected count'], cross.genotypes.map(row => [row.label, probabilityText(row), sample.count * row.ways / row.denominator])) + rowTable('Expected complete-dominance phenotype probabilities', ['Phenotype', 'Probability'], cross.phenotypes.map(row => [row.label, probabilityText(row)]));
     result.context = { model: INHERITANCE_MODEL, setup, sample: { count: sample.count, seed: sample.seed, included: options.includeData } };
+  } else if (capture.kind === 'linkage') {
+    const cross = createLinkageCross(capture.setup), setup = cross.setup, sample = sampleLinkedOffspring(setup, capture.count, capture.seed);
+    result.setup = `${setup.parent1} × ${setup.parent2}; shared recombination fraction r = ${setup.recombinationPercent}% (whole-percentage steps). Each slash separates the parent's two homologous chromosomes; each chromosome lists locus A then locus B. Reproducible sample: ${sample.count} offspring, seed ${sample.seed}.`;
+    result.assumptions = LINKAGE_ASSUMPTIONS; result.sources = [...LINKAGE_REFERENCES];
+    const gametes = (rows: typeof cross.gametes1) => rows.map(row => `${row.alleles}: ${probabilityText(row)} (${row.origin === 'uninformative' ? 'parental/recombinant routes not distinguishable at these markers' : row.origin})`).join('; ');
+    const probabilities = (rows: typeof cross.genotypes) => rows.map(row => `${row.label}: ${probabilityText(row)}`).join('; ');
+    const answers = [`Parent 1: ${gametes(cross.gametes1)}. Parent 2: ${gametes(cross.gametes2)}. For a double heterozygote, the two parental types each have (1−r)/2 and the two recombinant types each r/2. Duplicate outcomes combine when a locus is homozygous.`, `Unphased genotypes: ${probabilities(cross.genotypes)}. Complete-dominance phenotypes: ${probabilities(cross.phenotypes)}. With an ab/ab tester, each offspring's phenotype identifies the other parent's gamete in this idealized model. In a general cross the same genotype/phenotype can receive contributions from several gamete pairs.`, 'AB/ab and Ab/aB both have unphased genotype AaBb, but exchange parental/recombinant marker classes. For r < 50%, their common gametes differ; at r = 50%, each gamete has probability 1/4. This matches independent assortment without proving different chromosomes. The model parameter is bounded to 50%; a finite observed recombinant fraction can exceed 50%. Sample counts need not match expectations; recombination fraction is not a crossover count or physical/map distance.'];
+    result.questions = options.prompts.map((prompt, i) => ({ prompt, context: '', answer: answers[i], figures: [] }));
+    result.files['figures/linkage-parents.svg'] = linkageDiagram(setup);
+    result.studentData = `<figure>${result.files['figures/linkage-parents.svg']}<figcaption>Explicit parental phase; schematic spacing only.</figcaption></figure>`;
+    if (options.includeData) result.studentData += rowTable(`Observed synthetic offspring · n = ${sample.count} · seed ${sample.seed}`, ['Unphased genotype', 'Count'], sample.genotypes.map(row => [row.label, row.count])) + rowTable('Observed complete-dominance phenotype counts', ['Phenotype', 'Count'], sample.phenotypes.map(row => [row.label, row.count]));
+    result.teacherData = result.studentData + rowTable('Parent 1 gametes · configured reference', ['Gamete', 'Probability', 'Marker class'], cross.gametes1.map(row => [row.alleles, probabilityText(row), row.origin === 'uninformative' ? 'Not distinguishable at these markers' : row.origin])) + rowTable('Parent 2 gametes · configured reference', ['Gamete', 'Probability', 'Marker class'], cross.gametes2.map(row => [row.alleles, probabilityText(row), row.origin === 'uninformative' ? 'Not distinguishable at these markers' : row.origin])) + rowTable('Expected offspring · configured reference', ['Unphased genotype', 'Probability', `Expected count in ${sample.count}`], cross.genotypes.map(row => [row.label, probabilityText(row), sample.count * row.ways / row.denominator]));
+    result.context = { model: LINKAGE_MODEL, setup, sample: { count: sample.count, seed: sample.seed, included: options.includeData } };
   } else {
     const raw = capture.setup, setup: PopulationSetup = { size: raw.size, aCopies: raw.aCopies, generations: raw.generations, replicates: raw.replicates, seed: raw.seed, fitness: { AA: raw.fitness.AA, Aa: raw.fitness.Aa, aa: raw.fitness.aa } }, simulation = simulatePopulation(setup), p = setup.aCopies / (2 * setup.size);
     result.setup = `N = ${setup.size} diploid individuals; ${setup.aCopies} A and ${2 * setup.size - setup.aCopies} a copies initially. ${setup.generations} generations, ${setup.replicates} trials, master seed ${setup.seed}. Relative AA/Aa/aa fitness: ${setup.fitness.AA}/${setup.fitness.Aa}/${setup.fitness.aa}.`;
@@ -133,7 +150,7 @@ export async function worksheetPackage(sheet: PreparedWorksheet, audience: Works
   if (!['student', 'teacher'].includes(audience)) throw new Error('Choose student or teacher worksheet files.');
   const teacher = audience === 'teacher', files: Record<string, string> = {};
   for (const [path, value] of Object.entries(sheet.files)) {
-    const allowed = sheet.kind === 'tree' ? path === 'source.nwk' || /^figures\/q(?:[1-9]|1[0-2])-[12]\.svg$/.test(path) : sheet.kind === 'population' && ['population-counts.csv', 'figures/population-student.svg', 'figures/population-teacher.svg'].includes(path);
+    const allowed = sheet.kind === 'tree' ? path === 'source.nwk' || /^figures\/q(?:[1-9]|1[0-2])-[12]\.svg$/.test(path) : sheet.kind === 'linkage' ? path === 'figures/linkage-parents.svg' : sheet.kind === 'population' && ['population-counts.csv', 'figures/population-student.svg', 'figures/population-teacher.svg'].includes(path);
     if (!allowed) throw new Error('Unexpected worksheet artifact path. Nothing was downloaded.');
     if (!(audience === 'student' && path === 'figures/population-teacher.svg') && !(teacher && path === 'figures/population-student.svg')) files[path] = value;
   }

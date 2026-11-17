@@ -35,3 +35,11 @@ No browser exceptions or external network requests occurred. The six-mammal diag
 Learn receives a cloned source/context and has no project, history, save or export mutation callback. Its state is discarded on return. It supports 2–16 tips and at most 512 retained displayed nodes; intermediate annotated source nodes and unresolved forks are not removed to fit those limits. Only declared rooted phylogenies with stated entities can produce ancestry answers. Gene/sequence ancestry remains distinct from species ancestry.
 
 Saved activity scenarios, inheritance/population simulations, worksheet generation, grades and student tracking are outside A01. The education repository’s existing examples remain compatible; this package adds no ongoing content-maintenance commitment.
+
+## A02 follow-up — 2026-11-11
+
+Local scenario open/save is implemented in a separate follow-up change. Strict TypeScript checking, build and the full 253-test suite pass. Seven new scenario regressions cover source/context round trips, exact Unicode/CRLF/comments and duplicate identities, immutable polytomy-preserving replay, invalid identities/roots/versions, unknown answer fields and work bounds, protected citations/rights and display-only corrections.
+
+Actual Edge checks at 1440 × 1050 and 390 × 844 open both education scenarios, select/reset questions, calculate ancestry/clade feedback, replay layouts/rotations, update and add question setups, save/reopen them exactly, and fall back to the current setup when no questions are kept. A rejected version retains the exact existing diagrams/title; HTML-like question text stays literal. Changing the sample clears kept setups. No browser exceptions or external requests occurred; the narrow page has no horizontal overflow. The complete saved editor project and SVG remain identical before/after scenario use.
+
+The two demonstrations reuse the reviewed complete Upham source and the original synthetic A–E topology. Existing education PDFs, SVGs, projects and packs are unchanged. No runtime dependency, source dataset or artwork project schema is added. Scenario files retain setups and visible educator notes, while learner answers/progress and editor artwork/images stay excluded. See [the scenario contract and workflow](LEARNING-SCENARIOS.md).

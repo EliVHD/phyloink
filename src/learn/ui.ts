@@ -8,6 +8,8 @@ import { validateScene } from '../structured/validate.ts';
 import type { RenderScene, StructuredSettings, TextMeasurements } from '../structured/types.ts';
 import { MAX_LEARN_TIPS, checkAncestor, checkClade, commonAncestor, createLearningTree, learningAvailability, rotateLearningBranch, sameLearningRelationships } from './model.ts';
 import type { LearningInput, LearningTree } from './model.ts';
+import { MAX_ACTIVITIES, MAX_SCENARIO_BYTES, activityTree, prepareScenario, scenarioFromTree, validateActivity } from './scenario.ts';
+import type { LearningActivity } from './scenario.ts';
 
 type Task = 'ancestor' | 'clade' | 'compare';
 type Selection = { input: LearningInput; tipIds: string[] };
@@ -34,14 +36,33 @@ export class LearnController {
   private searchTimer?: ReturnType<typeof setTimeout>;
   private busy = false;
   private host: Host;
+  private activities: LearningActivity[] = [];
+  private activeActivity: string | null = null;
+  private rotations: string[] = [];
 
   constructor(host: Host) {
     this.host = host;
     $('learn-back').onclick = () => this.close();
     $('learn-current').onclick = () => this.run(() => this.use(this.host.current()));
     $('learn-demo').onclick = () => void this.run(() => this.demo());
+    $('learn-scenario-open').onclick = () => $<HTMLInputElement>('learn-scenario-file').click();
+    $('learn-scenario-file').onchange = () => {
+      const file = $<HTMLInputElement>('learn-scenario-file').files?.[0];
+      $<HTMLInputElement>('learn-scenario-file').value = '';
+      if (file) void this.run(() => this.loadScenario(file));
+    };
+    $('learn-scenario-save').onclick = () => void this.run(() => this.saveScenario());
+    for (const id of ['learn-scenario-title', 'learn-scenario-intro', 'learn-question-text']) $(id).oninput = () => this.syncPrompt();
+    $('learn-question-keep').onclick = () => this.run(() => this.keepQuestion());
+    $('learn-questions-clear').onclick = () => { this.activities = []; this.activeActivity = null; this.syncActivities(); $('learn-notice').textContent = 'Kept question setups cleared. Free practice is unchanged.'; };
+    $('learn-activity').onchange = () => this.run(() => {
+      const id = field('learn-activity').value;
+      if (id) this.selectActivity(id);
+      else { this.activeActivity = null; this.defaultPrompt(); this.clearFeedback(); this.paint(); }
+    });
     $('learn-task').onchange = () => {
       this.task = field('learn-task').value as Task; this.resetAnswer();
+      this.activeActivity = null; this.syncActivities(); this.defaultPrompt();
       if (this.task === 'clade') this.node = this.preferredNode();
       this.updateTask(); this.paint();
     };
@@ -52,11 +73,13 @@ export class LearnController {
     $('learn-explain').onclick = () => this.run(() => this.check(true));
     $('learn-rotate').onclick = () => this.run(() => {
       if (!this.tree || !this.node) throw new Error('Choose a numbered branching point to rotate.');
+      if (this.rotations.length >= 32) throw new Error('Reset rotations before recording more than 32 practice rotations.');
       this.tree = rotateLearningBranch(this.tree, this.node); this.clearFeedback();
+      this.rotations.push(this.node);
       $('learn-notice').textContent = `Rotated Node ${this.tree.nodeNumbers[this.node]}. Connections and clade memberships are preserved.`;
       void this.draw();
     });
-    $('learn-reset-order').onclick = () => { this.tree = this.original; this.clearFeedback(); void this.draw(); };
+    $('learn-reset-order').onclick = () => { this.tree = this.original; this.rotations = []; this.clearFeedback(); void this.draw(); };
     $('learn-layout').onchange = () => void this.draw();
     $('learn-codes').onchange = () => void this.draw();
     $('learn-search').oninput = () => {
@@ -68,13 +91,13 @@ export class LearnController {
       if (target?.dataset.learnAdd) {
         if (this.tips.length >= MAX_LEARN_TIPS) throw new Error(`Remove a tip before adding another; practice samples are limited to ${MAX_LEARN_TIPS}.`);
         if (!this.tips.includes(target.dataset.learnAdd)) this.tips.push(target.dataset.learnAdd);
-        this.rebuild(); this.search();
+        this.sampleChanged();
       } else if (target?.dataset.learnPage) { this.offset = Number(target.dataset.learnPage); this.search(); }
     });
     $('learn-sample').onclick = event => {
       if (this.busy) return;
       const id = (event.target as Element).closest<HTMLElement>('[data-learn-remove]')?.dataset.learnRemove;
-      if (id) { this.tips = this.tips.filter(tip => tip !== id); this.rebuild(); this.search(); }
+      if (id) { this.tips = this.tips.filter(tip => tip !== id); this.sampleChanged(); }
     };
     $('learn-clade-tips').onchange = event => {
       const checkbox = event.target as HTMLInputElement, id = checkbox.dataset.learnTip;
@@ -104,6 +127,7 @@ export class LearnController {
   close(): void {
     this.active = false; this.sequence++; this.loadSequence++; clearTimeout(this.searchTimer);
     this.input = undefined; this.tree = this.original = undefined; this.scenes = null; this.tips = []; this.busy = false;
+    this.activities = []; this.activeActivity = null; this.rotations = [];
     $('learn-view').hidden = true; document.querySelector<HTMLElement>('.workspace')!.hidden = false;
     for (const id of ['datasets-btn', 'import-btn', 'save-btn', 'export-btn']) $(id).hidden = false;
     $('learn-view-btn').focus();
@@ -113,13 +137,103 @@ export class LearnController {
   }
   private use(selection: Selection): void {
     this.loadSequence++;
+    this.setBusy(false); this.activities = []; this.activeActivity = null; this.rotations = [];
     this.input = structuredClone(selection.input); this.tips = [...selection.tipIds]; this.offset = 0;
+    $<HTMLInputElement>('learn-scenario-title').value = `${this.input.title} · practice`;
+    $<HTMLTextAreaElement>('learn-scenario-intro').value = '';
+    $<HTMLTextAreaElement>('learn-scenario-notes').value = '';
+    this.defaultPrompt(); this.syncActivities();
     $<HTMLInputElement>('learn-search').value = ''; this.sourceSummary(); this.rebuild(); this.search();
+  }
+  private setBusy(value: boolean): void {
+    this.busy = value;
+    for (const id of ['learn-demo', 'learn-current', 'learn-scenario-open']) $<HTMLButtonElement>(id).disabled = value;
+    this.syncActivities();
+  }
+  private defaultPrompt(): void {
+    $<HTMLTextAreaElement>('learn-question-text').value = this.task === 'ancestor' ? 'Trace the two selected tips toward the root. Where do their paths first meet?' : this.task === 'clade' ? 'Select every displayed descendant of the chosen node. What else belongs to its full-source clade?' : 'Do these drawings show the same relationships? Explain using branching connections rather than label positions.';
+    this.syncPrompt();
+  }
+  private syncPrompt(): void {
+    $('learn-question-prompt').textContent = $<HTMLTextAreaElement>('learn-question-text').value;
+    $('learn-activity-description').hidden = !this.activities.length;
+    $('learn-activity-title').textContent = $<HTMLInputElement>('learn-scenario-title').value;
+    $('learn-activity-intro').textContent = $<HTMLTextAreaElement>('learn-scenario-intro').value;
+  }
+  private sampleChanged(): void {
+    this.loadSequence++;
+    const count = this.activities.length;
+    this.activities = []; this.activeActivity = null; this.rotations = [];
+    this.defaultPrompt(); this.rebuild(); this.search();
+    if (count) $('learn-notice').textContent += ' Sample changed: kept question setups were cleared because their identities may no longer be displayed.';
+  }
+  private syncActivities(): void {
+    field('learn-activity').innerHTML = '<option value="">Free practice / new question</option>' + this.activities.map((activity, i) => `<option value="${esc(activity.id)}">${i + 1} · ${esc(activity.prompt.slice(0, 100))}</option>`).join('');
+    field('learn-activity').value = this.activeActivity ?? '';
+    for (const id of ['learn-scenario-save', 'learn-question-keep']) $<HTMLButtonElement>(id).disabled = this.busy || !this.tree;
+    $('learn-question-count').textContent = `${this.activities.length} of ${MAX_ACTIVITIES} question setups kept. Keep records the current question, pair/node, layout and rotations; it updates the selected kept question.`;
+    this.syncPrompt();
+  }
+  private currentQuestion(): LearningActivity {
+    if (!this.original) throw new Error('Choose a valid practice sample first.');
+    let id = this.activeActivity ?? `question-${this.activities.length + 1}`;
+    while (!this.activeActivity && this.activities.some(activity => activity.id === id)) id += '-new';
+    const common = { id, prompt: $<HTMLTextAreaElement>('learn-question-text').value, layout: field('learn-layout').value as 'rectangular' | 'circular', rotations: [...this.rotations] };
+    const activity: LearningActivity = this.task === 'ancestor' ? { ...common, kind: 'ancestor', tipIds: [field('learn-first').value, field('learn-second').value] } : this.task === 'clade' ? { ...common, kind: 'clade', nodeId: this.node ?? '' } : { ...common, kind: 'compare' };
+    validateActivity(activity, this.original); return activity;
+  }
+  private keepQuestion(): void {
+    const activity = this.currentQuestion(), index = this.activities.findIndex(item => item.id === activity.id);
+    if (index < 0 && this.activities.length >= MAX_ACTIVITIES) throw new Error(`Keep at most ${MAX_ACTIVITIES} question setups in one scenario.`);
+    if (index < 0) this.activities.push(activity); else this.activities[index] = activity;
+    this.activeActivity = activity.id; this.syncActivities();
+    $('learn-notice').textContent = 'Question setup kept in this temporary workspace. Save scenario to download it; learner answers are excluded.';
+  }
+  private selectActivity(id: string): void {
+    if (!this.original) return;
+    const activity = this.activities.find(item => item.id === id); if (!activity) throw new Error('Unknown question setup.');
+    const tree = activityTree(this.original, activity);
+    this.task = activity.kind; field('learn-task').value = this.task; this.resetAnswer();
+    this.tree = tree; this.rotations = [...activity.rotations]; this.activeActivity = id;
+    field('learn-layout').value = activity.layout;
+    if (activity.kind === 'ancestor') { field('learn-first').value = activity.tipIds[0]; field('learn-second').value = activity.tipIds[1]; }
+    if (activity.kind === 'clade') this.node = activity.nodeId;
+    $<HTMLTextAreaElement>('learn-question-text').value = activity.prompt;
+    this.syncActivities(); this.updateTask(); void this.draw();
+  }
+  private async loadScenario(file: File): Promise<void> {
+    if (this.busy) return;
+    if (file.size > MAX_SCENARIO_BYTES) throw new Error('Activity scenario exceeds the 25 MB limit.');
+    const request = ++this.loadSequence; this.setBusy(true);
+    $('learn-notice').textContent = 'Checking the local scenario; the current practice is retained until it passes.';
+    try {
+      const prepared = await prepareScenario(await file.text());
+      if (!this.active || request !== this.loadSequence) return;
+      this.use({ input: prepared.tree.input, tipIds: prepared.tree.tipIds });
+      const scenario = prepared.scenario;
+      $<HTMLInputElement>('learn-scenario-title').value = scenario.title;
+      $<HTMLTextAreaElement>('learn-scenario-intro').value = scenario.introduction;
+      $<HTMLTextAreaElement>('learn-scenario-notes').value = scenario.teacherNotes;
+      $<HTMLInputElement>('learn-codes').checked = scenario.tipCodes;
+      this.activities = scenario.activities; this.selectActivity(scenario.activities[0].id);
+      $('learn-notice').textContent = 'Local scenario opened. Select a kept question below. Educator notes are visible to anyone opening this file; answers and progress are temporary.';
+    } finally { if (request === this.loadSequence) this.setBusy(false); }
+  }
+  private async saveScenario(): Promise<void> {
+    if (!this.original) throw new Error('Choose a valid practice sample first.');
+    const request = this.loadSequence;
+    const activities = this.activities.length ? this.activities : [this.currentQuestion()];
+    const scenario = scenarioFromTree(this.original, { title: $<HTMLInputElement>('learn-scenario-title').value, introduction: $<HTMLTextAreaElement>('learn-scenario-intro').value, teacherNotes: $<HTMLTextAreaElement>('learn-scenario-notes').value, tipCodes: $<HTMLInputElement>('learn-codes').checked }, activities);
+    const serialized = JSON.stringify(scenario, null, 2) + '\n';
+    await prepareScenario(serialized);
+    if (!this.active || request !== this.loadSequence) return;
+    const url = URL.createObjectURL(new Blob([serialized], { type: 'application/json' })), link = document.createElement('a');
+    link.href = url; link.download = 'activity.phyloink-activity.json'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 30000);
+    $('learn-notice').textContent = `Scenario downloaded with ${activities.length} question setup(s) and the full embedded source. Review its reuse terms before sharing. Answers and progress are excluded.`;
   }
   private async demo(): Promise<void> {
     if (this.busy) return;
-    const request = ++this.loadSequence; this.busy = true;
-    $<HTMLButtonElement>('learn-demo').disabled = true; $<HTMLButtonElement>('learn-current').disabled = true;
+    const request = ++this.loadSequence; this.setBusy(true);
     $('learn-notice').textContent = 'Opening the bundled mammal demonstration locally…';
     try {
       const response = await fetch('/data/datasets/upham-2019.nwk'); if (!response.ok) throw new Error('The bundled mammal source could not be loaded.');
@@ -129,7 +243,7 @@ export class LearnController {
       const tips = names.map(name => { const matches = f.source.tips.filter(id => f.source.nodes[id].rawLabel.startsWith(name + '_')); if (matches.length !== 1) throw new Error('The demonstration source identities do not match.'); return matches[0]; });
       const corrections = tips.map((id, i) => ({ source_node_id: id, raw_label: f.source.nodes[id].rawLabel, display_taxonomy: names[i].replaceAll('_', ' '), status: 'display-only shortening in Learn', evidence_url: 'https://doi.org/10.5061/dryad.tb03d03', review_date: '2026-11-11' }));
       this.use({ input: { source: f.source, root: f.project.recipe.root, rootState: f.project.authoring.root, basis: f.project.authoring.basis, corrections, childOrder: {}, title: 'Six mammals · Upham et al. (2019)', references: Object.values(f.project.authoring.provenance.references) }, tipIds: tips });
-    } finally { this.busy = false; $<HTMLButtonElement>('learn-demo').disabled = false; $<HTMLButtonElement>('learn-current').disabled = false; }
+    } finally { if (request === this.loadSequence) this.setBusy(false); }
   }
   private label(id: string): string { return this.input ? displayLabel(this.input.source, id, this.input.corrections) : id; }
   private tipName(id: string): string { return `T${this.tips.indexOf(id) + 1} · ${this.label(id)}`; }
@@ -165,7 +279,7 @@ export class LearnController {
     $('learn-clade-tips').innerHTML = this.tips.map(id => `<label><input type="checkbox" data-learn-tip="${esc(id)}"> <span>${esc(this.tipName(id))}</span></label>`).join('');
     if (this.task === 'clade') this.node = this.preferredNode();
     for (const element of $('learn-exercise').querySelectorAll<HTMLButtonElement | HTMLSelectElement | HTMLInputElement>('button,select,input')) element.disabled = !this.tree;
-    this.updateTask(); void this.draw();
+    this.syncActivities(); this.updateTask(); void this.draw();
   }
   private updateTask(): void {
     for (const element of $('learn-exercise').querySelectorAll<HTMLElement>('[data-learn-task]')) element.hidden = element.dataset.learnTask !== this.task;

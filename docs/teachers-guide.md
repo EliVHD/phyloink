@@ -36,7 +36,9 @@ The sample is incomplete relative to the full source: feedback reports omitted d
 
 Learn requires a declared phylogenetic basis, known tip entities and a biological root; a serialization origin or classification hierarchy does not establish ancestors. For gene/sequence trees, the ancestry concerns those entities and does not establish species ancestry. Review source limitations before adapting a question.
 
-Practice is temporary. Returning to the editor discards answers, sample changes and rotations while retaining the saved drawing, pins, selection and undo history. Use editor exports for printable materials. Learn is one adaptable demonstration, with no saved learner progress or promised sequence of lessons.
+Practice is temporary. Returning to the editor discards the workspace while retaining the saved drawing, pins, selection and undo history. To reuse a setup, open **Local activity scenarios**, enter a title, introduction and educator notes, and use **Adapt / keep this question → Keep question** for each question. **Save scenario** downloads a self-contained local activity file; **Open scenario** restores its source, sample and question setups. Choose a kept question to reset answers and begin it. Notes are visible to anyone opening the file. Saved learner answers and progress are not part of the format.
+
+A scenario includes the complete Newick source and its citations, so review reuse terms before sharing it. A changed sample clears kept questions that may no longer apply. Keep an edited question before saving; if none are kept, Save records the current setup. Use editor exports for printable artwork. The usage guide explains the workflow, and the education repository provides two independent, adaptable demonstrations. Learn is not a promised sequence of lessons.
 
 ---
 

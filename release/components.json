@@ -29,7 +29,8 @@
         "0.1.1 release review: package-lock changes only application version metadata; all locked dependency versions, integrity values, licenses and development-only scope are unchanged. Original release notes add no third-party material.",
         "P00 naming migration, 2026-11-11: package name and development version metadata only; locked dependency versions, integrity values, licenses and development-only scope are unchanged. Legacy project/build/manifest identifiers and historical fixtures remain compatible.",
         "P02/P03, 2026-11-11: incorporate and edit the user-supplied Teacher's Guide; generate offline HTML from its canonical Markdown using an original build-only renderer. No third-party runtime code or new dependency.",
-        "A01 Learn, 2026-11-11: original temporary practice model, UI, tests and guide updates; uses the separately reviewed bundled Upham source without changing its bytes or terms. No new data, third-party implementation, runtime dependency or saved project field."
+        "A01 Learn, 2026-11-11: original temporary practice model, UI, tests and guide updates; uses the separately reviewed bundled Upham source without changing its bytes or terms. No new data, third-party implementation, runtime dependency or saved project field.",
+        "A02, 2026-11-11: original local scenario format, staged validation, question-setup UI and regression tests. Reuses separately reviewed sources and citations; no new data, dependency, service or project schema field."
       ],
       "obligations": [],
       "files": [
@@ -41,6 +42,7 @@
         "REDISTRIBUTION.md",
         "data/datasets/audit.json",
         "docs/LEARN-VERIFICATION.md",
+        "docs/LEARNING-SCENARIOS.md",
         "docs/MIGRATION.md",
         "docs/RELEASING.md",
         "docs/teachers-guide.md",
@@ -76,6 +78,7 @@
         "src/geometry.ts",
         "src/import.ts",
         "src/learn/model.ts",
+        "src/learn/scenario.ts",
         "src/learn/ui.ts",
         "src/model/basis.ts",
         "src/model/document.ts",
@@ -127,6 +130,7 @@
         "tests/identity.test.ts",
         "tests/import.test.ts",
         "tests/inspection-quality.test.ts",
+        "tests/learn-scenario.test.ts",
         "tests/learn.test.ts",
         "tests/metric.test.ts",
         "tests/project-v2.test.ts",

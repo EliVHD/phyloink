@@ -12,6 +12,7 @@ import type { LearningActivity } from './scenario.ts';
 import { InheritanceController } from './inheritance-ui.ts';
 import { PopulationController } from './population-ui.ts';
 import { LinkageController } from './linkage-ui.ts';
+import { BottleneckController } from './bottleneck-ui.ts';
 import { WorksheetController } from './worksheet-ui.ts';
 import type { WorksheetCapture } from './worksheet.ts';
 import type { BuildInfo } from '../provenance/identity.ts';
@@ -44,10 +45,11 @@ export class LearnController {
   private activities: LearningActivity[] = [];
   private activeActivity: string | null = null;
   private rotations: string[] = [];
-  private module: 'tree' | 'inheritance' | 'population' | 'linkage' = 'tree';
+  private module: 'tree' | 'inheritance' | 'population' | 'linkage' | 'bottleneck' = 'tree';
   private inheritance: InheritanceController;
   private population: PopulationController;
   private linkage: LinkageController;
+  private bottleneck: BottleneckController;
   private worksheets: WorksheetController;
 
   constructor(host: Host) {
@@ -55,12 +57,14 @@ export class LearnController {
     this.inheritance = new InheritanceController();
     this.population = new PopulationController();
     this.linkage = new LinkageController();
+    this.bottleneck = new BottleneckController();
     this.worksheets = new WorksheetController();
     $('learn-worksheet').onclick = () => this.run(() => this.worksheet());
     $('learn-tree-module').onclick = () => this.showModule('tree');
     $('learn-inheritance-module').onclick = () => this.showModule('inheritance');
     $('learn-population-module').onclick = () => this.showModule('population');
     $('learn-linkage-module').onclick = () => this.showModule('linkage');
+    $('learn-bottleneck-module').onclick = () => this.showModule('bottleneck');
     $('learn-back').onclick = () => this.close();
     $('learn-current').onclick = () => this.run(() => this.use(this.host.current()));
     $('learn-demo').onclick = () => void this.run(() => this.demo());
@@ -138,7 +142,7 @@ export class LearnController {
 
   open(): void {
     this.active = true;
-    this.inheritance.reset(); this.population.reset(); this.linkage.reset(); this.showModule('tree');
+    this.inheritance.reset(); this.population.reset(); this.linkage.reset(); this.bottleneck.reset(); this.showModule('tree');
     document.querySelector<HTMLElement>('.workspace')!.hidden = true;
     $('learn-view').hidden = false;
     for (const id of ['datasets-btn', 'import-btn', 'save-btn', 'export-btn']) $(id).hidden = true;
@@ -149,26 +153,28 @@ export class LearnController {
     this.active = false; this.sequence++; this.loadSequence++; clearTimeout(this.searchTimer);
     this.input = undefined; this.tree = this.original = undefined; this.scenes = null; this.tips = []; this.busy = false;
     this.activities = []; this.activeActivity = null; this.rotations = [];
-    this.inheritance.reset(); this.population.reset(); this.linkage.reset();
+    this.inheritance.reset(); this.population.reset(); this.linkage.reset(); this.bottleneck.reset();
     $('learn-view').hidden = true; document.querySelector<HTMLElement>('.workspace')!.hidden = false;
     for (const id of ['datasets-btn', 'import-btn', 'save-btn', 'export-btn']) $(id).hidden = false;
     $('learn-view-btn').focus();
   }
-  private showModule(module: 'tree' | 'inheritance' | 'population' | 'linkage'): void {
+  private showModule(module: 'tree' | 'inheritance' | 'population' | 'linkage' | 'bottleneck'): void {
     this.module = module; this.sequence++; this.loadSequence++; clearTimeout(this.searchTimer); this.setBusy(false);
     $('learn-tree-workspace').hidden = module !== 'tree'; $('inheritance-workspace').hidden = module !== 'inheritance';
     $('population-workspace').hidden = module !== 'population';
     $('linkage-workspace').hidden = module !== 'linkage';
+    $('bottleneck-workspace').hidden = module !== 'bottleneck';
     $('learn-tree-module').setAttribute('aria-pressed', String(module === 'tree')); $('learn-inheritance-module').setAttribute('aria-pressed', String(module === 'inheritance'));
     $('learn-population-module').setAttribute('aria-pressed', String(module === 'population'));
     $('learn-linkage-module').setAttribute('aria-pressed', String(module === 'linkage'));
-    $('learn-heading').textContent = module === 'tree' ? 'Read the relationships' : module === 'inheritance' ? 'Explore inheritance' : module === 'linkage' ? 'Explore linkage and recombination' : 'Explore population evolution';
+    $('learn-bottleneck-module').setAttribute('aria-pressed', String(module === 'bottleneck'));
+    $('learn-heading').textContent = module === 'tree' ? 'Read the relationships' : module === 'inheritance' ? 'Explore inheritance' : module === 'linkage' ? 'Explore linkage and recombination' : module === 'bottleneck' ? 'Explore bottleneck and recovery' : 'Explore population evolution';
     if (module === 'tree' && this.tree) void this.draw();
   }
   private worksheet(): void {
     if (this.busy) throw new Error('Finish loading the practice setup before preparing a worksheet.');
     if (this.module !== 'tree') {
-      this.worksheets.open({ current: this.module === 'inheritance' ? this.inheritance.worksheetCapture() : this.module === 'linkage' ? this.linkage.worksheetCapture() : this.population.worksheetCapture(), title: this.module === 'inheritance' ? 'Inheritance worksheet' : this.module === 'linkage' ? 'Linkage and recombination worksheet' : 'Population evolution worksheet', instructions: 'Explain your reasoning. Distinguish the model assumptions, expected probabilities and finite samples.', teacherNotes: '' }, this.host.build()); return;
+      this.worksheets.open({ current: this.module === 'inheritance' ? this.inheritance.worksheetCapture() : this.module === 'linkage' ? this.linkage.worksheetCapture() : this.module === 'bottleneck' ? this.bottleneck.worksheetCapture() : this.population.worksheetCapture(), title: this.module === 'inheritance' ? 'Inheritance worksheet' : this.module === 'linkage' ? 'Linkage and recombination worksheet' : this.module === 'bottleneck' ? 'Bottleneck and recovery worksheet' : 'Population evolution worksheet', instructions: 'Explain your reasoning. Distinguish the model assumptions, expected probabilities and finite samples.', teacherNotes: '' }, this.host.build()); return;
     }
     if (!this.original) throw new Error('Choose a valid rooted source and small practice sample before preparing a tree worksheet.');
     const metadata = { title: field('learn-scenario-title').value, introduction: $<HTMLTextAreaElement>('learn-scenario-intro').value, teacherNotes: $<HTMLTextAreaElement>('learn-scenario-notes').value, tipCodes: $<HTMLInputElement>('learn-codes').checked };

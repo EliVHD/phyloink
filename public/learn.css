@@ -55,6 +55,8 @@
 .learn-question-author { margin-bottom: 16px; font-size: 13px; }
 .learn-question-author summary { cursor: pointer; margin-bottom: 10px; }
 .learn-modules { margin-bottom: 18px; flex-wrap: wrap; }
+.bottleneck-chart { overflow-x: auto; margin: 18px 0; }
+.bottleneck-chart svg { display: block; width: 100%; min-width: 650px; height: auto; }
 .worksheet-dialog { width: min(1100px, 95vw); max-width: 95vw; max-height: 92vh; padding: 20px; }
 .worksheet-dialog > p { font-size: 13px; line-height: 1.6; }
 .worksheet-body { display: grid; grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); gap: 20px; align-items: start; }

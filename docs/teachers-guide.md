@@ -28,7 +28,7 @@ The expected conclusion is that changing the layout alone does not change the su
 
 For an artistic variation, use **Free arrangement → Arrange** to preview Tree-like, Radial, Fan, Upright branching or Horizontal starting shapes. Compare with **Show original**, then use or discard the proposal. The same source relationships and unresolved branches remain; page spacing carries no calibrated evolutionary distance or time. Inspect any draft geometry findings and resolve conflicting pins explicitly. Presets provide editable starting forms; use scientific structured layouts when the exercise depends on a particular layout meaning.
 
-A finite showcase of prepared projects, example questions, teacher notes and an annotated Newick source directory lives in the [PhyloInk education repository](https://github.com/EliVHD/phyloink-education). Its examples are starting points for educators to adapt, not a full course or a promise of recurring additions. Inheritance and population labs are future planning items; they are not current application features.
+A finite showcase of prepared projects, example questions, teacher notes and an annotated Newick source directory lives in the [PhyloInk education repository](https://github.com/EliVHD/phyloink-education). Its examples are starting points for educators to adapt, not a full course or a promise of recurring additions. The inheritance demonstration below is available in the A03 development change; population evolution remains a separate planned addition.
 
 ### Optional interactive practice
 
@@ -36,11 +36,21 @@ Choose **Learn** above the editor canvas and **Try six mammals** for a short dem
 
 The sample is incomplete relative to the full source: feedback reports omitted descendants, and a complete source clade includes them. Node numbers are temporary practice markers. Branch spacing is nonmetric, and changing layout does not supply dates or evolutionary distances. Unresolved forks stay unresolved. The six-mammal names are shortened for display only; source identities and original labels remain intact.
 
-Learn requires a declared phylogenetic basis, known tip entities and a biological root; a serialization origin or classification hierarchy does not establish ancestors. For gene/sequence trees, the ancestry concerns those entities and does not establish species ancestry. Review source limitations before adapting a question.
+Tree-interpretation practice requires a declared phylogenetic basis, known tip entities and a biological root; a serialization origin or classification hierarchy does not establish ancestors. For gene/sequence trees, the ancestry concerns those entities and does not establish species ancestry. Review source limitations before adapting a question.
 
 Practice is temporary. Returning to the editor discards the workspace while retaining the saved drawing, pins, selection and undo history. To reuse a setup, open **Local activity scenarios**, enter a title, introduction and educator notes, and use **Adapt / keep this question → Keep question** for each question. **Save scenario** downloads a self-contained local activity file; **Open scenario** restores its source, sample and question setups. Choose a kept question to reset answers and begin it. Notes are visible to anyone opening the file. Saved learner answers and progress are not part of the format.
 
 A scenario includes the complete Newick source and its citations, so review reuse terms before sharing it. A changed sample clears kept questions that may no longer apply. Keep an edited question before saving; if none are kept, Save records the current setup. Use editor exports for printable artwork. The usage guide explains the workflow, and the education repository provides two independent, adaptable demonstrations. Learn is not a promised sequence of lessons.
+
+### Optional inheritance demonstration
+
+Choose **Learn → Inheritance lab** for an independent synthetic cross. The two starting demonstrations are **Aa × Aa** (segregation and genotype versus phenotype) and **AaBb × AaBb** (independent assortment). Ask learners to predict the all-recessive phenotype's probability before using **Check reasoning** or **Explain cross**. Compare the individual Punnett cells with the aggregated genotype and phenotype tables. A cell's probability concerns its parental gamete combination; the same offspring genotype can occur in several cells.
+
+Use a small offspring sample, then try another integer seed or a larger sample. The same settings reproduce the same trial. All 1–1,000 offspring enter the totals; at most 64 individual genotypes are displayed. Expected counts may be fractional; random finite samples need not match an expected ratio. A larger sample does not guarantee a closer match on every trial. Dominance describes the modeled phenotype, not transmission advantage or how common an allele is.
+
+Keep the assumptions visible: diploid autosomal loci, two alleles per locus, equal segregation, random fertilization, complete dominance, and independent assortment for two loci. A_ means AA or Aa; B_ means BB or Bb. Linkage, sex linkage, mutation, selection, penetrance variation, epistasis and environmental effects are outside this model. Use abstract labels rather than implying that complex human traits follow a single-gene rule. This lab does not infer traits from the phylogeny and needs no biological tree root.
+
+Change the parent genotypes to adapt the question, such as Aa × aa. Module switching retains temporary practice, but returning to the editor discards the lab; tree scenarios do not save its setups, answers or samples. The [two companion walkthroughs](https://github.com/EliVHD/phyloink-education/tree/codex/inheritance-walkthroughs/labs/inheritance) provide question and adaptation starting points. This bounded feature is not a course or an ongoing lesson programme. For background, see [NHGRI's Mendelian inheritance glossary](https://www.genome.gov/genetics-glossary/Mendelian-Inheritance) and [Clarifying Mendelian vs non-Mendelian inheritance (Genetics, 2024)](https://doi.org/10.1093/genetics/iyae078); no external reading is loaded automatically.
 
 ---
 

@@ -1,0 +1,27 @@
+# A03 — bounded inheritance demonstrations
+
+Development verification, 2026-11-16. **Learn → Inheritance lab** offers two synthetic starting crosses, Aa × Aa and AaBb × AaBb. Educators can change the parent genotypes and sample settings. This is a finite demonstration of teaching possibilities; population evolution, worksheet export and individually scoped advanced experiments remain later packages.
+
+## Model and workflow
+
+The original `mendelian-independent-v1` model supports one or two diploid autosomal loci, two alleles per locus, equal segregation of parental allele copies, random fertilization and complete dominance. Two loci assort independently. Linkage, mutation, selection, sex linkage, incomplete penetrance, epistasis and environmental effects are outside its scope. Abstract A/a and B/b alleles are not observations of organisms in a supplied tree. A_ groups AA and Aa; B_ groups BB and Bb. Dominance does not confer a transmission advantage or establish allele frequency.
+
+Choose parents, predict the all-recessive phenotype's probability, then Check reasoning or Explain cross. Answers accept an explicit fraction, decimal or percentage. Gamete probabilities are weighted by parental allele-copy multiplicity, so a homozygous parent's identical copies form one gamete type with probability one. Punnett cells describe parental gamete combinations. Several cells can yield the same genotype; the genotype and phenotype tables aggregate all applicable combinations and retain zero-probability outcomes. Fractions are computed with integer counts over 4 or 16 equally likely allele-copy combinations, then reduced for display.
+
+Sample 1–1,000 offspring with an integer seed from 0 to 4,294,967,295. The versioned implementation uses a deterministic Mulberry32 stream to draw one gamete independently from each parent per offspring. The same parents, size and seed reproduce a trial; clicking again restarts it rather than advancing a generation. All offspring enter the counts; only the first 64 individual genotypes are shown. Exact expected probabilities do not depend on seed or sample size, and expected counts may be fractional. Finite samples need not match an expected ratio, and increasing sample size does not guarantee a closer match on every trial.
+
+## Isolation and reuse
+
+The pure inheritance module has no source-tree, host, document or persistence input. Its UI controller has no editor, download or network capability. Learn's host still exposes reads only. Switching modules retains temporary practice while invalidating pending tree drawing/demo/scenario replies. Returning to the editor resets the inheritance lab and discards practice, preserving the editor's exact project, SVG, selection, camera, QA, pins, undo and unsaved state.
+
+The existing tree-scenario V1 format is unchanged and does not contain inheritance setups, samples, seeds or learner answers. There is no new project field or lab download format. Two adaptation walkthroughs belong in the [education companion](https://github.com/EliVHD/phyloink-education/tree/codex/inheritance-walkthroughs/labs/inheritance); the usage guide and canonical Teacher's Guide remain here. All code, explanatory text and synthetic crosses are original 0BSD contributions. No article text, figure, biological dataset, implementation or dependency is imported.
+
+Background references, checked 2026-11-16: [NHGRI — Mendelian inheritance](https://www.genome.gov/genetics-glossary/Mendelian-Inheritance), and [Clarifying Mendelian vs non-Mendelian inheritance, Genetics (2024), DOI 10.1093/genetics/iyae078](https://doi.org/10.1093/genetics/iyae078). They are conceptual reading links; nothing is fetched automatically by the lab.
+
+## Verification
+
+Strict TypeScript checking, the full **273-test** suite and the build pass. Nine new model regressions cover the 1:2:1 versus 3:1 distinction; test crosses and homozygous weights; independent 9:3:3:1 outcomes; all 81 supported two-locus parental pairs and parent symmetry; exact totals/zero outcomes; invalid genotypes/loci; deterministic seeded replay, stream-prefix consistency and a fixed sequence; parental gamete transmission; the 1,000-offspring bound and invalid inputs; and non-executable probability parsing.
+
+Actual Edge at 1440 × 1050 and 390 × 844 checks prediction/explanation, allele tracing, all exact tables, reproducible samples, all 1,000 offspring counted with 64 displayed, size/seed bounds and clearing stale results. Switching modules preserves a kept tree question, answer and drawing; returning to the editor restores the exact serialized project and SVG/QA/camera/history, including a pin and its subsequent undo. Reopening resets lab settings. Inheritance also works with an unspecified/unrooted input without changing it. Earlier A01/A02/A07/A08 browser workflows pass. No browser exceptions or external requests occur, and the narrow page has no horizontal overflow; tables can scroll locally. Desktop and narrow layouts are visually inspected.
+
+Local browser/source archives pass exact inventory, payload/ZIP hash and distribution checks. The extracted source installs offline from the reviewed lockfile with an existing cache, typechecks and rebuilds with identical build identity. Source checksums and changed local guide links are verified. Existing scientific source bytes, dependency lock, historical fixtures, project/scenario formats and published releases remain unchanged.

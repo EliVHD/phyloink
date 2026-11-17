@@ -14,7 +14,7 @@ The unchanged `wright-fisher-selection-v1` model weights expected random-mating 
 
 Then A copies are sampled binomially with 2N trials and probability p_selected. Fitnesses are relative contributions, not survival percentages. Phenotype dominance does not assign heterozygote fitness. No individual genotypes, survival events or pedigrees are simulated. The deterministic recursion is an infinite-population/no-drift reference, not the mean of finite trajectories under nonlinear selection.
 
-For the example, the first references are 23/44 in S1 and 13/25 in S2. S2 has a stable interior no-drift equilibrium at p(A) = 2/3; the finite-horizon reference need not reach it. Finite populations can still fix or lose an allele. Missing alleles remain absent. Locus loss/fixation is not species extinction. A few paths cannot establish selection, estimate fixation probabilities or guarantee a condition ranking.
+For the example, the first references are 23/44 in S1 and 13/25 in S2. S2 has a stable interior no-drift equilibrium at p(A) = 2/3; the finite-horizon reference need not reach it. Finite populations can still fix or lose an allele. Missing alleles remain absent. Locus loss/fixation is not species extinction. A few paths cannot establish selection, reliably estimate fixation probabilities or guarantee a condition ranking. Fixation by the recorded final generation differs from eventual fixation.
 
 The model assumes a closed, constant-size population, random mating, non-overlapping generations and one autosomal locus. No mutation, migration, linked loci, size changes, changing environment, sex structure or zero-fitness extinction. N and weights are chosen inputs, not empirical estimates. Nothing is inferred from a tree.
 

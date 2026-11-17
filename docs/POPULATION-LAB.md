@@ -8,7 +8,7 @@ The original `wright-fisher-selection-v1` model represents N diploid individuals
 
 This is an allele-frequency Wright–Fisher approximation, not individual survival, mating/pedigree or measured genotype tracking. Equal fitnesses give neutral sampling. Weights are relative contributions, not absolute survival percentages. Bounds require positive weights, so zero-fitness extinction is excluded. No mutation, migration, linked loci, changing environment, growth or sex structure is modeled. Loss/fixation at the locus is absorbing, including at generation zero. No tree supplies genotypes, observed frequencies or an empirical population-size estimate.
 
-The black reference repeatedly applies the selection recursion without finite sampling. For neutral drift it remains at p0; under selection it is not the expectation of nonlinear finite trajectories or the mean of the plotted trials. A few replicates do not estimate fixation probability or establish selection from an observed increase. At a fixed initial frequency, neutral one-generation variance is p(1−p)/(2N); individual small ensembles need not show the expected ordering of variability.
+The black reference repeatedly applies the selection recursion without finite sampling. For neutral drift it remains at p0; under selection it is not the expectation of nonlinear finite trajectories or the mean of the plotted trials. A few replicates cannot reliably estimate fixation probability or establish selection from an observed increase. Fixation by the recorded final generation differs from eventual fixation. At a fixed initial frequency, neutral one-generation variance is p(1−p)/(2N); individual small ensembles need not show the expected ordering of variability.
 
 ## Controls, bounds and isolation
 

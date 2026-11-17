@@ -10,6 +10,8 @@ Edit the title (500 characters), student instructions and teacher-only notes (10
 
 Open `student.html` or `teacher.html` locally and use browser Print / Save as PDF at 100% scale on the selected paper. Exported files need no server, script or external asset. Plain-text questions and native SVGs remain editable. Long prompts or reference tables may span pages; print preview remains the final check. Tree question figures use measured physical font sizes and reject if their bounds exceed the paper instead of silently scaling labels. Use codes, a smaller sample or explicit shorter display labels when necessary. Draft font/geometry findings remain printed and recorded. Font measurements apply to the export browser; review on the intended printing device.
 
+A06.1 adds linkage worksheets from explicit phased parents, shared recombination percentage, sample size and seed. The phase schematic remains even when finite data are omitted. Student counts are regenerated; exact gamete/genotype references remain teacher-only. No learner state or new import format is added. See [linkage model](LINKAGE-LAB.md).
+
 ## Audience and state boundaries
 
 Student packages contain worksheet HTML/plain text, applicable SVG/data/source files, `context.json`, README and exact manifest. They omit the teacher reference, educator notes, teacher authoring record and teacher-only population reference plot. Teacher packages contain the separately named teacher HTML/plain text and `authoring.json` with edited prompts/options/notes. Keep them separate from student distribution. Underlying source/model data remain available for reasoning; this is not a secure assessment system.

@@ -66,6 +66,14 @@ Controls support 2–500 individuals, 1–100 generations, 1–8 trials, fitness
 
 The [two companion population walkthroughs](https://github.com/EliVHD/phyloink-education/tree/codex/population-walkthroughs/labs/population) supply adaptable questions and teacher reasoning. Use the original [MIT HST.508 notes (2005)](https://ocw.mit.edu/courses/hst-508-quantitative-genomics-fall-2005/aad420032640a927d69dc1a8b2a08750_hst508lecture1.pdf) and [Graham Coop's population-genetics notes (2013), diploid-selection section](https://gcbias.org/wp-content/uploads/2013/03/popgen_notes3.pdf) as optional background. No external reading, empirical data or traits are fetched by the lab. These two demonstrations illustrate possibilities rather than extending a course.
 
+### Optional linkage and recombination experiment
+
+Choose **Learn → Linkage & recombination** for **AB/ab × ab/ab**, initially r = 10%, 100 offspring and seed 1. AB/ab and Ab/aB share genotype AaBb but differ in phase. Ask learners to predict gametes before revealing the exact weighted combinations. Each parental gamete has probability (1−r)/2 and each recombinant r/2 for a double heterozygote. The default test cross gives offspring AaBb, Aabb, aaBb and aabb at 45%, 5%, 5% and 45%; the ab/ab tester reveals the other parent's gamete through its idealized phenotype.
+
+Change phase, then try r = 0% and 50% or change sample settings. At 50%, probabilities match independent assortment; this does not establish different chromosomes. A finite observed recombinant fraction can exceed 50%, while the model parameter remains bounded to 0–50 whole percentages. Homozygous markers cannot distinguish parental/recombinant routes. All offspring are counted and only the first 64 phased genotypes are displayed. The diagram is schematic, and r is neither a crossover count nor physical/map distance.
+
+Keep the synthetic autosomal equal-segregation, symmetric-recombination, random-fertilization and complete-dominance assumptions visible. One shared r applies to both parents; no sex-specific recombination, mutation, selection, epistasis, environmental effects, distance inference or multigeneration breeding is included. Practice stays temporary and outside tree scenarios/projects. **Create worksheet** deliberately captures educator settings and optional regenerated counts, with separate teacher references and no learner predictions/feedback/progress. See the [model and verification](https://github.com/EliVHD/phyloink/blob/codex/linkage-recombination/docs/LINKAGE-LAB.md) and [one adaptable companion example](https://github.com/EliVHD/phyloink-education/tree/codex/linkage-walkthrough/labs/linkage). The authoritative guides remain here; no ongoing lesson programme is promised.
+
 ## 1. What Can You Create with PhyloInk?
 
 PhyloInk can support several approaches to teaching evolution, taxonomy, and phylogenetic reasoning.

@@ -20,6 +20,7 @@ The app runs on your computer, with no account, backend or file uploads. After i
 
 - **Choose your source:** open a Newick file, resume a saved project or use the bundled tree-of-life, mammal, primate and plant datasets.
 - **Find and explore:** search the complete source, including hidden tips, and inspect large trees in a separate zoomable Explore view.
+- **Try tree interpretation:** use the temporary Learn workspace for common ancestors, displayed clade members and equivalent drawings, with a six-mammal demonstration or a small sample from your own source.
 - **Choose a layout:** rectangular, circular or fan cladograms; source-distance phylograms; supplied-rank classifications; and unrooted equal-angle or daylight views.
 - **Refine the artwork:** adjust labels and shared junctions, pin geometry, preview readability improvements, or create a separate artistic copy. The Free arrangement workspace adds manual curves, silhouette borders and fitting.
 - **Keep the evidence:** save editable projects and export paired labeled/unlabeled SVGs with source mappings, references, Sources & Methods and geometry checks.
@@ -79,6 +80,14 @@ Choose **Explore** above the canvas to inspect the complete source in rectangula
 *Kew release 4.0, with 20,485 sampled terminal identities including outgroups; data under CC BY 4.0. See [screenshot sources and credits](docs/screenshots/README.md).*
 
 **← Editor** returns to the drawing. Exploring leaves the artwork, selection, pins and undo history intact; exports use accepted editor artwork. Explore spacing does not encode distance or time.
+
+## Try a teaching idea in Learn
+
+Choose **Learn** above the canvas, then **Try six mammals**, or search your current source for 2–16 tips. A small editor selection or active structured view is used when available. Try finding a common ancestor, identifying a branching point’s displayed descendants, and comparing rectangular/circular drawings after rotating a node. **Check reasoning** gives explanatory feedback; **Explain** reveals the relevant source paths or memberships.
+
+Ancestry activities require a declared phylogenetic basis, known tip entities and a biological root. Classification and unrooted sources remain available in the editor and Explore. The practice sample distinguishes displayed descendants from omitted members of the full source clade. Spacing and node numbers carry no distance or time meaning. Long names can use tip codes linked to the full names in the sample list; reported label conflicts need inspection.
+
+Learn is a finite demonstration of teaching possibilities, not a course or assessment system. It has no saved progress or activity files. **← Editor** discards practice state and returns to the unchanged drawing, selection, pins, QA and undo history. Use the editor for saved projects and exports. Inheritance and population labs remain future packages.
 
 ## Projects and exports
 

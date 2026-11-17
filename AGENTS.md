@@ -40,6 +40,7 @@ The development server has no automatic rebuild. Rebuild and reload after source
 | Structured projection, layout and validation | `src/structured/` |
 | Organic geometry, shaping and fitting | `src/geometry.ts`, `src/design.ts`, `src/fitting.ts`, `src/routing.ts`, `src/worker.ts` |
 | Read-only source exploration | `src/explore/` |
+| Temporary tree-interpretation practice | `src/learn/` |
 | Exports and distribution | `src/export.ts`, `src/export-provenance.ts`, `src/structured/export.ts`, `tools/` |
 
 - Follow the surrounding TypeScript style and strict compiler settings. Use ESM imports with `.ts` extensions and `import type` for type-only dependencies.
@@ -53,6 +54,7 @@ The development server has no automatic rebuild. Rebuild and reload after source
 - Separate drawing geometry and computational traversal from biological rooting. Cladogram/Explore depth is nonmetric; phylograms require declared units and evidence. Classification links describe supplied membership. Free artistic placement makes no calibrated distance claim.
 - Accepted edits must validate before replacing the current state, respect pins and preserve undo/provenance behavior. Use the existing command pipeline where applicable. Reject stale worker results and keep failed imports or discarded previews from changing the document.
 - Explore owns temporary navigation/detail state only. It must not mutate artwork, reduction, pins, QA, undo or unsaved state, and its temporary summaries must not become exported artwork.
+- Learn owns temporary samples, answers and drawing rotations only. Keep it outside project/history/export state; preserve biological-root requirements, exact source identities, complete child-subtree permutations, polytomies and omitted-descendant disclosures. Keep demonstrations bounded and educator-adaptable rather than promising a growing course.
 - Preserve exact stored artwork during supported project migrations. The current saved format is V4 despite the legacy `project-v2.ts` filename. Keep unknown historical provenance and unverified user citations explicit.
 - Keep labeled/unlabeled SVG branch artwork identical. Editing overlays stay out of artwork SVGs but can remain in the accompanying project; document that distinction.
 - Keep unresolved contacts, unavailable font measurements and work limits visible as draft findings. Do not silently shrink labels, suppress findings or claim biological validation from geometry checks.

@@ -28,6 +28,16 @@ The expected conclusion is that changing the layout alone does not change the su
 
 A finite showcase of prepared projects, example questions, teacher notes and an annotated Newick source directory lives in the [PhyloInk education repository](https://github.com/EliVHD/phyloink-education). Its examples are starting points for educators to adapt, not a full course or a promise of recurring additions. Inheritance and population labs are future planning items; they are not current application features.
 
+### Optional interactive practice
+
+Choose **Learn** above the editor canvas and **Try six mammals** for a short demonstration using the bundled Upham source. Alternatively, choose 2–16 terminal identities from your current rooted phylogenetic source. The activities ask learners to find a most recent common ancestor, identify all displayed descendants of a node, and compare the same relationships in different layouts or after a rotation. Feedback explains the source paths and memberships rather than recording grades.
+
+The sample is incomplete relative to the full source: feedback reports omitted descendants, and a complete source clade includes them. Node numbers are temporary practice markers. Branch spacing is nonmetric, and changing layout does not supply dates or evolutionary distances. Unresolved forks stay unresolved. The six-mammal names are shortened for display only; source identities and original labels remain intact.
+
+Learn requires a declared phylogenetic basis, known tip entities and a biological root; a serialization origin or classification hierarchy does not establish ancestors. For gene/sequence trees, the ancestry concerns those entities and does not establish species ancestry. Review source limitations before adapting a question.
+
+Practice is temporary. Returning to the editor discards answers, sample changes and rotations while retaining the saved drawing, pins, selection and undo history. Use editor exports for printable materials. Learn is one adaptable demonstration, with no saved learner progress or promised sequence of lessons.
+
 ---
 
 ## 1. What Can You Create with PhyloInk?

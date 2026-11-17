@@ -12,6 +12,8 @@ Open `student.html` or `teacher.html` locally and use browser Print / Save as PD
 
 A06.1 adds linkage worksheets from explicit phased parents, shared recombination percentage, sample size and seed. The phase schematic remains even when finite data are omitted. Student counts are regenerated; exact gamete/genotype references remain teacher-only. No learner state or new import format is added. See [linkage model](LINKAGE-LAB.md).
 
+A06.3 adds two explicit selection conditions at shared N, starting frequency and horizon. Static figures use identical axes; student plots omit the no-drift references and teacher plots include them. Printed tables select generation 0, midpoint and final; `selection-comparison-counts.csv` retains every condition/trial/generation with exact N/A/a counts and derived p(A). Captures contain setup/seeds only; omission removes all figures/CSV. See [model and bounds](SELECTION-COMPARISONS.md).
+
 A06.2 adds a bounded neutral bottleneck/recovery worksheet with a constant-size comparison. Plots and selected-generation tables disclose both size schedules; full CSV preserves every condition/trial/generation and exact N/A/a counts, with p/H derived numerically. Student files exclude the theoretical reference plot and teacher keys. Disabling data removes plots/CSV while retaining validated setup context. See [model and bounds](BOTTLENECK-LAB.md).
 
 ## Audience and state boundaries

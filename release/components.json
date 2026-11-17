@@ -1,7 +1,7 @@
 {
   "format": "clade-component-review",
   "version": 1,
-  "reviewedAt": "2026-11-11",
+  "reviewedAt": "2026-11-16",
   "policy": "Use 0BSD for original software; preserve only the component-specific obligations applicable to included third-party material. No public release authorized by this local build.",
   "reviewedDependencyLockSha256": "27857d703ec8ab145d9cda65ca8ee6240a0ec070156685664b14316717592061",
   "components": [
@@ -31,7 +31,8 @@
         "P02/P03, 2026-11-11: incorporate and edit the user-supplied Teacher's Guide; generate offline HTML from its canonical Markdown using an original build-only renderer. No third-party runtime code or new dependency.",
         "A01 Learn, 2026-11-11: original temporary practice model, UI, tests and guide updates; uses the separately reviewed bundled Upham source without changing its bytes or terms. No new data, third-party implementation, runtime dependency or saved project field.",
         "A02, 2026-11-11: original local scenario format, staged validation, question-setup UI and regression tests. Reuses separately reviewed sources and citations; no new data, dependency, service or project schema field.",
-        "A07, 2026-11-11: original shared Explore source/accepted-drawing scopes and compact topology snapshots, retired standalone inspection initializer, preserved legacy-coordinate compatibility and regression coverage. No new data, dependencies or saved-project fields."
+        "A07, 2026-11-11: original shared Explore source/accepted-drawing scopes and compact topology snapshots, retired standalone inspection initializer, preserved legacy-coordinate compatibility and regression coverage. No new data, dependencies or saved-project fields.",
+        "A08, 2026-11-16: original five-preset Free arrangement initializer, temporary worker previews, pin-conflict preservation, accepted-command provenance and regression tests. New native SVG form icons are original application UI. No new dependency, scientific input, project schema or external artwork."
       ],
       "obligations": [],
       "files": [
@@ -47,6 +48,7 @@
         "docs/LEARNING-SCENARIOS.md",
         "docs/MIGRATION.md",
         "docs/RELEASING.md",
+        "docs/STARTING-SHAPES.md",
         "docs/teachers-guide.md",
         "package-lock.json",
         "package.json",
@@ -97,6 +99,7 @@
         "src/routing.ts",
         "src/science.ts",
         "src/search.ts",
+        "src/starting-shapes.ts",
         "src/structured/artistic.ts",
         "src/structured/classification.ts",
         "src/structured/coordinates.ts",
@@ -147,6 +150,7 @@
         "tests/schema-check.ts",
         "tests/science.test.ts",
         "tests/search.test.ts",
+        "tests/starting-shapes.test.ts",
         "tests/structured.test.ts",
         "tests/unrooted.test.ts",
         "tools/benchmark-routing.ts",

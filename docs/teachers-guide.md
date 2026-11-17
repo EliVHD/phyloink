@@ -26,6 +26,8 @@ Start with a teacher-prepared source and a small selection. This example demonst
 
 The expected conclusion is that changing the layout alone does not change the supplied topology. Use the labeled diagram as a teacher reference and the unlabeled version as an activity starting point. Review the source and all questions before classroom use.
 
+For an artistic variation, use **Free arrangement → Arrange** to preview Tree-like, Radial, Fan, Upright branching or Horizontal starting shapes. Compare with **Show original**, then use or discard the proposal. The same source relationships and unresolved branches remain; page spacing carries no calibrated evolutionary distance or time. Inspect any draft geometry findings and resolve conflicting pins explicitly. Presets provide editable starting forms; use scientific structured layouts when the exercise depends on a particular layout meaning.
+
 A finite showcase of prepared projects, example questions, teacher notes and an annotated Newick source directory lives in the [PhyloInk education repository](https://github.com/EliVHD/phyloink-education). Its examples are starting points for educators to adapt, not a full course or a promise of recurring additions. Inheritance and population labs are future planning items; they are not current application features.
 
 ### Optional interactive practice

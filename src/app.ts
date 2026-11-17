@@ -1,5 +1,7 @@
 import { ExploreController } from './explore/ui.ts';
 import { prepareExploreInput } from './explore/input.ts';
+import { STARTING_SHAPES, startingShapeName } from './starting-shapes.ts';
+import type { StartingShape, StartingShapeResult } from './starting-shapes.ts';
 import { LearnController } from './learn/ui.ts';
 import { MAX_LEARN_TIPS } from './learn/model.ts';
 import { prepareLocalImport, prepareBundledDataset } from './import.ts';
@@ -40,7 +42,10 @@ let qa: QA | null = null, selected = new Set<string>();
 let showNodes = true, showIssues = true, spaceDown = false;
 let scienceVersion = 0, editVersion = 0, ready = false, pendingReduction = false;
 let desiredRecipe: Recipe | null = null;
-let fitPreview: FitResult | null = null, pendingFit = false, compareOriginal = false, fitVersion = 0;
+type ShapePreview = StartingShapeResult & { baseRevision: string; viewId: string };
+let fitPreview: FitResult | ShapePreview | null = null, pendingFit = false, compareOriginal = false, fitVersion = 0;
+let startingShape: StartingShape = 'tree-like', pendingShape: StartingShape | null = null;
+const isShapePreview = (preview: FitResult | ShapePreview): preview is ShapePreview => 'kind' in preview && preview.kind === 'starting-shape';
 let requestSequence = 0;
 const workers = new Map<string, { worker: Worker; reject: (error: Error) => void }>();
 const history = new History<Project>();
@@ -92,7 +97,7 @@ function regenerationEvidence(target = rooted.rootId): CommandEvidence {
 }
 function mutate(action: () => void, affectsGeometry = true, evidence: CommandEvidence = {}): void {
   if (structuredController.enabled) throw new Error('Use the Layout controls for constrained structured changes, or return to Free arrangement for artistic editing.');
-  if (fitPreview) throw new Error('Keep or discard the fit preview before editing.');
+  if (fitPreview) throw new Error('Use or discard the artwork preview before editing.');
   clearFit(); commitOpacity();
   if (!semanticCapabilities(project.authoring!.root, 'artistic', project.authoring!.edgeMeasure, project.authoring!.basis).canEditGeometry) throw new Error('This relationship adapter is not implemented. Edit the basis metadata or inspect the saved artwork.');
   if (legacyInspection() && affectsGeometry) throw new Error('Stored legacy inspection artwork is read-only. Choose Arrange → Make artistic to edit it.');
@@ -104,7 +109,7 @@ function mutate(action: () => void, affectsGeometry = true, evidence: CommandEvi
 }
 function savedRecipe(): Recipe { return { ...project.recipe, resolvedFrontierSourceNodeIds: reduction.frontier.map(x => x.id) }; }
 function syncRecipe(): void { project.recipe.resolvedFrontierSourceNodeIds = reduction.frontier.map(x => x.id); }
-function workerTask<T>(kind: 'reduce' | 'validate' | 'fit' | 'structured', payload: Record<string, unknown>): Promise<T> {
+function workerTask<T>(kind: 'reduce' | 'validate' | 'fit' | 'starting-shape' | 'structured', payload: Record<string, unknown>): Promise<T> {
   const old = workers.get(kind); if (old) { old.worker.terminate(); old.reject(new Error('superseded')); }
   const id = ++requestSequence, worker = new Worker(new URL('./worker.ts', import.meta.url).href.replace(/\.ts$/, '.js'), { type: 'module' });
   const baseRevision = currentRevision(), viewId = effectiveViewId(project as import('./model/document.ts').WorkingProject);
@@ -158,6 +163,7 @@ function focusSelection(): void {
   viewBox.x = point.x - viewBox.w / 2; viewBox.y = point.y - viewBox.h / 2; setViewBox();
 }
 function updateButtons(): void {
+  if (ready) renderStartingShapes();
   $('legacy-inspection-note').hidden = project.layout.mode !== 'scientific';
   ($('undo-btn') as HTMLButtonElement).disabled = (!history.past.length && !fitPreview && !pendingFit) || pendingReduction;
   ($('redo-btn') as HTMLButtonElement).disabled = !history.future.length || pendingReduction || pendingFit || !!fitPreview;
@@ -172,7 +178,7 @@ function updateButtons(): void {
   $('save-btn').toggleAttribute('disabled',!ready||pendingReduction||pendingFit||!!fitPreview||structuredController.pending);
   $('export-btn').title=!structuredController.enabled&&legacyInspection()?'Adopt legacy inspection artwork with Arrange → Make artistic before exporting.':'';
   if(structuredController.enabled)$('export-btn').toggleAttribute('disabled',!structuredController.exportable);else if(legacyInspection())$('export-btn').setAttribute('disabled','');
-  $('canvas-context').textContent = structuredController.enabled ? structuredController.busy?'Building structured view…':structuredController.preview?structuredController.dragging?'Moving artistic geometry':'Structured preview · original retained':structuredController.view?.intent==='artistic'?'Artistic copy · source connectivity retained':structuredController.view?.intent==='taxonomy'?'Classification · supplied parent links':structuredController.view?.intent==='unrooted'?'Unrooted · display origin only':structuredController.view?.intent==='phylogram'?'Phylogram · source distances':'Nonmetric structured cladogram' : pendingFit ? 'Fitting junctions…' : fitPreview ? compareOriginal ? 'Comparing original arrangement' : 'Preview · artwork unchanged' : pendingReduction ? 'Recalculating reduction…' : legacyInspection() ? 'Legacy inspection artwork · preserved' : 'Editable arrangement';
+  $('canvas-context').textContent = structuredController.enabled ? structuredController.busy?'Building structured view…':structuredController.preview?structuredController.dragging?'Moving artistic geometry':'Structured preview · original retained':structuredController.view?.intent==='artistic'?'Artistic copy · source connectivity retained':structuredController.view?.intent==='taxonomy'?'Classification · supplied parent links':structuredController.view?.intent==='unrooted'?'Unrooted · display origin only':structuredController.view?.intent==='phylogram'?'Phylogram · source distances':'Nonmetric structured cladogram' : pendingShape ? 'Preparing starting shape…' : pendingFit ? 'Fitting junctions…' : fitPreview ? compareOriginal ? 'Comparing original arrangement' : 'Preview · artwork unchanged' : pendingReduction ? 'Recalculating reduction…' : legacyInspection() ? 'Legacy inspection artwork · preserved' : 'Editable arrangement';
 }
 function render(): void {
   if (!ready) return;
@@ -390,7 +396,7 @@ on('import-btn', () => input('file-input').click());
 input('file-input').addEventListener('change', () => { const file = input('file-input').files?.[0]; if (file) void guard(() => importFile(file)); input('file-input').value = ''; });
 on('save-btn', () => { commitOpacity(); validateDesign(project.design, rooted); validateLayout(project.layout, rooted, reduction); const state = snapshot(); if (!hasAuthoring(state)) throw new Error('Missing document.'); download('tree.treeproject.json', serializeProject(state, exportingBuild), 'application/json'); unsaved = false; toast('Version-4 project saved with exact geometry, source and accepted-operation provenance.'); });
 on('export-btn', exportPackage); on('validate-btn', runValidation);
-on('regenerate-btn', () => mutate(() => regenerate(), true, regenerationEvidence()));
+on('regenerate-btn', previewStartingArrangement);
 on('routing-demo-btn', () => {
   if (pendingReduction) throw new Error('Wait for the reduction to finish.');
   const before = structuredClone(project), demo = routingDemo(source); Object.assign(project, demo);
@@ -669,8 +675,46 @@ async function importReference(file: Blob, name: string): Promise<void> {
 // A fit stays outside the project until explicitly accepted. Cancellation terminates its worker.
 function clearFit(): void {
   fitVersion++;
-  const running = workers.get('fit'); if (running) { running.worker.terminate(); running.reject(new Error('superseded')); workers.delete('fit'); }
-  fitPreview = null; pendingFit = false; compareOriginal = false;
+  for (const kind of ['fit', 'starting-shape']) { const running = workers.get(kind); if (running) { running.worker.terminate(); running.reject(new Error('superseded')); workers.delete(kind); } }
+  fitPreview = null; pendingFit = false; pendingShape = null; compareOriginal = false;
+}
+function startingShapeSummary(result: ShapePreview): string {
+  const counts = (qa: QA, kinds: QA['issues'][number]['type'][]) => `${qa.issues.filter(issue => kinds.includes(issue.type)).length}${qa.omittedIssueCount ? '+' : ''}`;
+  const row = (label: string, value: string) => `<div class="result-row"><span>${label}</span><strong>${value}</strong></div>`;
+  return row('Starting form', startingShapeName(result.shape)) + row('Junctions / endpoints moved', `${result.movedJunctions.length} / ${result.movedEndpoints}`) + row('Pinned junctions / edges kept', `${result.retainedPinnedNodes} / ${result.retainedPinnedEdges}`) + row('Hidden junctions kept', String(result.retainedHiddenNodes)) + row('Recorded contacts · before → after', `${counts(result.beforeQA, ['crossing', 'self-intersection'])} → ${counts(result.afterQA, ['crossing', 'self-intersection'])}`) + row('Clearance / bounds findings', `${counts(result.afterQA, ['clearance'])} / ${counts(result.afterQA, ['bounds'])}`) + `<p class="${result.afterQA.status === 'checked' ? 'fit-good' : 'fit-warning'}">${result.afterQA.status === 'checked' ? 'Geometry checks passed at this page size.' : 'Draft artwork. Inspect the geometry findings before using it.'} ${result.afterQA.annotationCollisions} numbered-label conflicts. Source selection and connections are retained. These editable coordinates carry no calibrated distance or time meaning.</p>`;
+}
+function renderStartingShapes(): void {
+  const editable = semanticCapabilities(project.authoring!.root, 'artistic', project.authoring!.edgeMeasure, project.authoring!.basis).canEditGeometry;
+  const unavailable = !editable || structuredController.enabled || legacyInspection() || importing || pendingReduction || pendingFit || !!fitPreview && !isShapePreview(fitPreview);
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-starting-shape]')) { button.disabled = unavailable; button.setAttribute('aria-pressed', String(button.dataset.startingShape === startingShape)); }
+  $<HTMLButtonElement>('regenerate-btn').disabled = unavailable;
+  $('regenerate-btn').textContent = pendingShape ? 'Calculating shape…' : `Preview ${startingShapeName(startingShape)}`;
+  $('cancel-starting-shape').hidden = !pendingShape;
+  $('starting-shape-description').textContent = editable ? `${startingShapeName(startingShape)} · ${STARTING_SHAPES.find(shape => shape.id === startingShape)!.description}. Uses your current page and line style.` : 'Declare a supported relationship basis in Scientific context before editing free artwork.';
+  $('starting-shape-summary').innerHTML = fitPreview && isShapePreview(fitPreview) ? startingShapeSummary(fitPreview) : pendingShape ? '<p>Preparing and checking a temporary proposal. Cancel retains the current artwork.</p>' : '<p>Nothing changes until you use the preview.</p>';
+}
+for (const button of document.querySelectorAll<HTMLButtonElement>('[data-starting-shape]')) button.addEventListener('click', () => guard(() => {
+  if (fitPreview && !isShapePreview(fitPreview)) throw new Error('Keep or discard the fit preview before choosing a starting shape.');
+  const shape = button.dataset.startingShape as StartingShape;
+  if (!STARTING_SHAPES.some(item => item.id === shape)) throw new Error('Unknown starting shape.');
+  clearFit(); startingShape = shape; render();
+}));
+on('cancel-starting-shape', () => { clearFit(); render(); toast('Shape calculation canceled. Artwork unchanged.'); });
+async function previewStartingArrangement(): Promise<void> {
+  if (!ready || importing || structuredController.enabled || legacyInspection() || pendingReduction || pendingFit || structuredController.pending || workers.size) throw new Error('Finish calculations and use Free arrangement before previewing a starting shape.');
+  if (fitPreview && !isShapePreview(fitPreview)) throw new Error('Keep or discard the current fit preview first.');
+  if (!semanticCapabilities(project.authoring!.root, 'artistic', project.authoring!.edgeMeasure, project.authoring!.basis).canEditGeometry) throw new Error('This source basis does not support free artistic editing.');
+  endDrag(true); commitOpacity(); clearFit(); designTool = 'edit';
+  const version = ++fitVersion, edit = editVersion, originalSource = source, shape = startingShape, baseRevision = currentRevision(), viewId = effectiveViewId(project as import('./model/document.ts').WorkingProject);
+  pendingFit = true; pendingShape = shape; render();
+  try {
+    const result = await workerTask<StartingShapeResult>('starting-shape', { sourceText: source.text, recipe: savedRecipe(), layout: project.layout, presentation: project.presentation, shape });
+    if (version !== fitVersion || edit !== editVersion || source !== originalSource) return;
+    validateLayout(result.layout, rooted, reduction);
+    if (!result.afterQA.coveragePassed || !result.afterQA.incidencePassed) throw new Error('The shape failed source coverage or junction checks. Original artwork retained.');
+    fitPreview = { ...result, baseRevision, viewId };
+    toast(`${startingShapeName(shape)} preview ready. Compare the original, then use or discard it.`);
+  } finally { if (version === fitVersion) { pendingFit = false; pendingShape = null; render(); } }
 }
 function fitSettings(): FitSettings { const settings = project.design?.fitSettings ?? DEFAULT_FIT_SETTINGS; return { ...settings, routing: settings.routing ?? 0, forkSpread: settings.forkSpread ?? 0 }; }
 function selectedJunctions(): string[] {
@@ -679,6 +723,7 @@ function selectedJunctions(): string[] {
 }
 function renderFitControls(): void {
   if (!ready) return;
+  renderStartingShapes();
   const settings = fitSettings(), readonly = legacyInspection() || pendingReduction;
   $<HTMLFieldSetElement>('auto-fit-settings').disabled = readonly;
   $('fit-readonly').hidden = !legacyInspection();
@@ -692,15 +737,17 @@ function renderFitControls(): void {
   const pinned = project.layout.pinnedNodes.filter(id => reduction.visible.includes(id) && !reduction.frontier.some(e => e.id === id)).length;
   $('fit-anchor-status').textContent = `${selectedJunctions().length} internal junctions selected · ${pinned} junctions pinned · origin fixed`;
   for (const id of ['fit-pin-selected', 'fit-unpin-selected']) $<HTMLButtonElement>(id).disabled = pendingFit || !!fitPreview || !selectedJunctions().length;
-  $<HTMLButtonElement>('preview-fit').disabled = readonly || pendingFit || !project.design?.borders.length;
-  $('preview-fit').textContent = pendingFit ? 'Fitting junctions and checking curves…' : fitPreview ? 'Recalculate preview' : 'Preview automatic fit';
+  $<HTMLButtonElement>('preview-fit').disabled = readonly || pendingFit || !!fitPreview && isShapePreview(fitPreview) || !project.design?.borders.length;
+  $('preview-fit').textContent = pendingShape ? 'Preparing starting shape…' : pendingFit ? 'Fitting junctions and checking curves…' : fitPreview ? 'Recalculate preview' : 'Preview automatic fit';
   $('cancel-fit').hidden = !pendingFit;
   $('fit-compare-row').hidden = !fitPreview; input('fit-compare').checked = compareOriginal;
   $('fit-preview-banner').hidden = !fitPreview;
-  $('fit-preview-caption').textContent = compareOriginal ? 'Original arrangement · comparison only' : 'Fit preview · blue marks show moved junctions';
+  $('fit-preview-caption').textContent = compareOriginal ? 'Original arrangement · comparison only' : fitPreview && isShapePreview(fitPreview) ? `${startingShapeName(fitPreview.shape)} preview · ${fitPreview.movedJunctions.length > 800 ? 'first 800 ' : ''}moved junctions marked` : 'Fit preview · blue marks show moved junctions';
+  $('compare-preview').textContent = compareOriginal ? 'Show preview' : 'Show original'; $('compare-preview').setAttribute('aria-pressed', String(compareOriginal));
   $('inspector-content').inert = pendingFit || !!fitPreview;
   $('fit-summary').innerHTML = pendingFit ? '<p class="help">Calculating in a background worker. Cancel keeps your current artwork.</p>' : '<p class="help">Your artwork changes only when you keep the preview.</p>';
   if (!fitPreview) return;
+  if (isShapePreview(fitPreview)) { $('accept-fit').textContent = fitPreview.afterQA.status === 'checked' ? 'Use shape' : 'Use draft shape'; $('fit-summary').innerHTML = startingShapeSummary(fitPreview); return; }
   const r = fitPreview, counts = (q: QA, kinds: QA['issues'][number]['type'][]) => `${q.issues.filter(i => kinds.includes(i.type)).length}${q.omittedIssueCount ? '+' : ''}`;
   $('accept-fit').textContent = r.afterQA.status === 'checked' ? 'Use fit' : 'Use draft fit';
   const row = (label: string, value: string) => `<div class="result-row"><span>${label}</span><strong>${value}</strong></div>`;
@@ -734,7 +781,8 @@ async function previewAutomaticFit(): Promise<void> {
 }
 function fitPreviewMarkup(): string {
   if (!fitPreview || compareOriginal || legacyInspection()) return '';
-  return `<g id="fit-junction-preview" pointer-events="none">${fitPreview.movedJunctions.map(j => `<path d="M${j.from.x},${j.from.y}L${j.to.x},${j.to.y}" stroke="#729bb1" stroke-width=".16" stroke-dasharray=".7 .5" opacity=".6"/><circle cx="${j.from.x}" cy="${j.from.y}" r=".5" fill="none" stroke="#8ca4b1" stroke-width=".15"/><circle data-fit-junction="${j.id}" cx="${j.to.x}" cy="${j.to.y}" r=".8" fill="#4282a4" stroke="#fff" stroke-width=".2"/>`).join('')}</g>`;
+  const shape = isShapePreview(fitPreview), moved = shape ? fitPreview.movedJunctions.slice(0, 800) : fitPreview.movedJunctions;
+  return `<g id="fit-junction-preview" pointer-events="none">${moved.map(j => `${shape ? '' : `<path d="M${j.from.x},${j.from.y}L${j.to.x},${j.to.y}" stroke="#729bb1" stroke-width=".16" stroke-dasharray=".7 .5" opacity=".6"/><circle cx="${j.from.x}" cy="${j.from.y}" r=".5" fill="none" stroke="#8ca4b1" stroke-width=".15"/>`}<circle data-fit-junction="${j.id}" cx="${j.to.x}" cy="${j.to.y}" r=".8" fill="#4282a4" stroke="#fff" stroke-width=".2"/>`).join('')}</g>`;
 }
 function directionBorder(id = directionScope): EndpointBorder | undefined { return project.design?.borders.find(b => b.id === id); }
 function renderDirectionControls(): void {
@@ -793,9 +841,17 @@ input('fit-direction-strength').addEventListener('input', () => { $('fit-directi
 on('draw-direction', () => { clearFit(); setDesignTool(designTool === 'draw-direction' ? 'edit' : 'draw-direction'); render(); });
 on('preview-fit', previewAutomaticFit);
 on('cancel-fit', () => { clearFit(); render(); toast('Calculation canceled. Artwork unchanged.'); });
-on('discard-fit', () => { clearFit(); render(); toast('Fit discarded. Artwork unchanged.'); });
+on('discard-fit', () => { clearFit(); render(); toast('Preview discarded. Artwork unchanged.'); });
+on('compare-preview', () => { compareOriginal = !compareOriginal; renderCanvas(); renderInspector(); renderQA(); renderFitControls(); updateButtons(); });
 on('accept-fit', () => {
   const result = fitPreview; if (!result) return;
+  if (isShapePreview(result)) {
+    if (!hasAuthoring(project) || !isCurrentResult(project, result.baseRevision, result.viewId)) throw new Error('The drawing changed after this preview. Discard it and preview the shape again.');
+    if (JSON.stringify(result.layout) === JSON.stringify(project.layout)) { clearFit(); render(); toast('This starting shape already matches the artwork. No change needed.'); return; }
+    const evidence: CommandEvidence = { kind: 'layout', methods: ['artistic-starting-shape', ...(result.shape === 'tree-like' ? ['organic-initializer'] : [])], inputs: Object.keys(project.authoring.provenance.heads).filter(key => key === 'source' || key === 'scientific' || key === 'basis' || key.startsWith(viewPrefix(project.authoring!.activeViewId))), parameters: { shape: result.shape, pinPolicy: 'reject-conflicting', page: { widthMm: project.presentation.widthMm, heightMm: project.presentation.heightMm }, lineStyle: project.layout.lineStyle ?? 'curved', childOrder: project.layout.childOrder, pinnedNodes: project.layout.pinnedNodes, pinnedEdges: project.layout.pinnedEdges }, result: { accepted: true, movedJunctions: result.movedJunctions.length, movedEndpoints: result.movedEndpoints, retainedHiddenNodes: result.retainedHiddenNodes, qaStatus: result.afterQA.status }, notes: 'Accepted the explicit starting-shape preview. Visible artwork replaced; hidden geometry, pins, source selection, scientific context, page, guides and images retained. Nonmetric editable artwork; no silhouette fit or relationship inference.' };
+    clearFit(); mutate(() => { project.layout = result.layout; }, true, evidence); qa = result.afterQA; render();
+    toast(`${startingShapeName(result.shape)} applied. Undo restores the previous arrangement.`); return;
+  }
   const settings = structuredClone(fitSettings()), constraints = structuredClone(project.design ?? { borders: [], showBorders: true });
   const evidence: CommandEvidence = { kind: 'layout', methods: fitMethodIds(result), inputs: Object.keys(project.authoring!.provenance.heads).filter(key => key === 'source' || key === 'scientific' || key.startsWith(viewPrefix(project.authoring!.activeViewId))), parameters: { settings, borders: constraints.borders, activeBorderId: constraints.activeBorderId ?? null, pinnedNodes: project.layout.pinnedNodes, pinnedEdges: project.layout.pinnedEdges, presentation: project.presentation, lineStyle: project.layout.lineStyle ?? 'curved' }, result: { accepted: true, routingLimited: result.routingLimited, routingDiagnostics: result.routingDiagnostics ?? null, refinedRoutes: result.refinedRoutes, movedEndpoints: result.movedEndpoints, errorAfterMm: result.errorAfterMm, qaStatus: result.afterQA.status, directionConflicts: result.directionConflicts }, notes: 'Accepted fit; sampled-path objectives and transported bends consume existing geometry. Residual issues remain disclosed.' };
   clearFit(); mutate(() => { project.layout = result.layout; design().fitSettings = settings; }, true, evidence); qa = result.afterQA; render();

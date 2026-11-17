@@ -87,6 +87,12 @@ Solid diamonds identify authored collapsed groups, which remain fixed when zoomi
 
 Legacy projects containing normalized inspection coordinates still open and save with their exact artwork and pins. Use **Arrange → Make artistic** to explicitly adopt those coordinates before editing or exporting; this does not reshape them. See the [consolidation and verification notes](docs/EXPLORE-CONSOLIDATION.md).
 
+## Start a free arrangement
+
+In **Free arrangement → Arrange**, choose **Tree-like**, **Radial**, **Fan**, **Upright branching** or **Horizontal**, then **Preview**. **Show original** compares the accepted drawing; **Use shape** (or **Use draft shape**) accepts one undoable edit. **Discard**, **Cancel** or Escape retains the accepted artwork.
+
+Presets replace visible junction positions and bends using the current page and line style. Source identities, selection, unresolved branches, child order, hidden artwork, labels, guides and editing images stay intact. A conflicting pinned junction or edge rejects the whole proposal; unpin explicitly to retry. Review the disclosed geometry findings. Starting forms carry no calibrated distance/time meaning and do not automatically fit a silhouette or remain constraints on later edits. Use **Shape** and **Fit** for guide-based refinement, or structured **Layout** for scientific layouts. See [limits and verification](docs/STARTING-SHAPES.md).
+
 ## Try a teaching idea in Learn
 
 Choose **Learn** above the canvas, then **Try six mammals**, or search your current source for 2–16 tips. A small editor selection or active structured view is used when available. Try finding a common ancestor, identifying a branching point’s displayed descendants, and comparing rectangular/circular drawings after rotating a node. **Check reasoning** gives explanatory feedback; **Explain** reveals the relevant source paths or memberships.
@@ -95,7 +101,7 @@ Ancestry activities require a declared phylogenetic basis, known tip entities an
 
 Learn is a finite demonstration of teaching possibilities, not a course or assessment system. **Local activity scenarios → Open scenario / Save scenario** reuses a source, sample and up to 12 question setups. Use **Adapt / keep this question → Keep question** to record a pair/node, question text, layout and rotations. A scenario embeds its complete source and citations; review their terms before sharing. Learner answers and progress are excluded. See [scenario use and format](docs/LEARNING-SCENARIOS.md) and the [two adaptable demonstrations](https://github.com/EliVHD/phyloink-education/tree/main/scenarios).
 
-**← Editor** discards the temporary workspace and returns to the unchanged drawing, selection, pins, QA and undo history. Download a scenario to retain its setups. Use the editor for saved artwork projects and exports. Inheritance and population labs remain future packages; Explore consolidation and Free arrangement starting shapes are recorded in the [task plan](docs/MIGRATION.md).
+**← Editor** discards the temporary workspace and returns to the unchanged drawing, selection, pins, QA and undo history. Download a scenario to retain its setups. Use the editor for saved artwork projects and exports. Inheritance and population labs remain future packages in the [task plan](docs/MIGRATION.md).
 
 ## Projects and exports
 

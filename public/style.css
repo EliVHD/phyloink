@@ -45,3 +45,13 @@
   .explore-footer { flex-wrap: wrap; }
   #explore-legend { padding: 8px 12px; }
 }
+
+/* Starting-shape icons are form choices; the full source appears in the actual preview. */
+.starting-shape-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
+.starting-shape-card { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 10px 5px; white-space: normal; min-width: 0; }
+.starting-shape-card svg { width: 70px; height: 49px; max-width: 100%; fill: none; stroke: #45664a; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.starting-shape-card strong { font-size: 12px; }
+.starting-shape-card span { font-size: 10px; font-weight: 400; }
+.starting-shape-card[aria-pressed=true] { box-shadow: inset 0 0 0 1px #426b48; }
+.starting-shape-card:focus-visible { outline: 3px solid #4272a2; outline-offset: 2px; }
+#starting-shape-summary { margin-top: 12px; }

@@ -28,7 +28,7 @@ The expected conclusion is that changing the layout alone does not change the su
 
 For an artistic variation, use **Free arrangement → Arrange** to preview Tree-like, Radial, Fan, Upright branching or Horizontal starting shapes. Compare with **Show original**, then use or discard the proposal. The same source relationships and unresolved branches remain; page spacing carries no calibrated evolutionary distance or time. Inspect any draft geometry findings and resolve conflicting pins explicitly. Presets provide editable starting forms; use scientific structured layouts when the exercise depends on a particular layout meaning.
 
-A finite showcase of prepared projects, example questions, teacher notes and an annotated Newick source directory lives in the [PhyloInk education repository](https://github.com/EliVHD/phyloink-education). Its examples are starting points for educators to adapt, not a full course or a promise of recurring additions. The inheritance and population demonstrations below are available in their A03/A04 development changes; worksheet export and advanced experiments remain separate planned additions.
+A finite showcase of prepared projects, example questions, teacher notes and an annotated Newick source directory lives in the [PhyloInk education repository](https://github.com/EliVHD/phyloink-education). Its examples are starting points for educators to adapt, not a full course or a promise of recurring additions. The A03/A04 development changes provide the inheritance/population demonstrations; A05 adds explicit worksheet export. Advanced experiments remain separately scoped additions.
 
 ### Optional interactive practice
 
@@ -571,7 +571,11 @@ For a reusable classroom activity, keep together:
 4. **PhyloInk project** — The editable project used to prepare the materials.
 5. **Source information** — References, scientific context, and dataset licensing information.
 
-The worksheet and lesson-plan documents are prepared separately; PhyloInk exports diagrams and supporting scientific records rather than generating complete educational lessons automatically.
+Use **Learn → Create worksheet** to prepare your own student prompts and a separate teacher reference from current/kept tree questions or the current inheritance/population setup. Edit the title, instructions, prompts and teacher-only notes, choose A4 or Letter, then **Prepare preview**. Review both audiences and download their ZIPs separately. The HTML prints locally with the browser's Print / Save as PDF; plain text and SVGs remain editable. Lesson plans and wider classroom design remain the educator's responsibility; this is not automatic lesson/course generation.
+
+Student files exclude answer references, teacher notes, authoring records and all learner responses/progress. Teacher references follow the configured source/model task rather than interpreting custom wording; adapt your teacher-only notes when questions change. Keep teacher ZIPs separate from student distribution. Tree packages retain original source text, source IDs/paths, omissions, protected citations/rights, and a full-name legend for optional tip codes. Lab data are regenerated from educator settings/seeds, not copied from learner feedback or sample DOM. Population CSV retains every generation when the printed table shows selected generations.
+
+Review source reuse terms, draft geometry/font findings and print preview at the intended scale. Figures that exceed printable bounds reject rather than shrinking labels. Long prompts may span pages. Export records are not importable scenarios, and editing files invalidates their recorded hashes. Worksheet preparation does not change accepted artwork, projects, learning setups, pins, QA, undo or unsaved state. See the canonical [worksheet notes](https://github.com/EliVHD/phyloink/blob/codex/worksheet-export/docs/WORKSHEETS.md) and [companion adaptation workflow](https://github.com/EliVHD/phyloink-education/tree/codex/worksheet-workflow/worksheet-export). Both guides remain in this repository; no ongoing lesson-production commitment is added.
 
 ### Licensing and attribution
 

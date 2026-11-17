@@ -35,6 +35,7 @@ export class PopulationController {
     for (const [id, value] of Object.entries({ 'population-size': setup.size, 'population-copies': setup.aCopies, 'population-generations': setup.generations, 'population-replicates': setup.replicates, 'population-seed': setup.seed, 'population-fitness-AA': setup.fitness.AA, 'population-fitness-Aa': setup.fitness.Aa, 'population-fitness-aa': setup.fitness.aa })) input(id).value = String(value);
     this.changed();
   }
+  worksheetCapture(): import('./worksheet.ts').WorksheetCapture { return { kind: 'population', setup: this.setup() }; }
   private setup(): PopulationSetup {
     const value = (id: string) => input(id).value.trim() ? Number(input(id).value) : NaN;
     const setup: PopulationSetup = { size: value('population-size'), aCopies: value('population-copies'), generations: value('population-generations'), replicates: value('population-replicates'), seed: value('population-seed'), fitness: { AA: value('population-fitness-AA'), Aa: value('population-fitness-Aa'), aa: value('population-fitness-aa') } };

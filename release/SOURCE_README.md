@@ -8,9 +8,11 @@ Formerly Clade Studio. This source archive preserves compatibility with existing
 
 A local browser app for turning supplied phylogenetic trees and classification hierarchies into editable drawings with sources and methods attached. Import Newick, select organisms or groups, choose a layout, refine and export SVG artwork.
 
-The app runs locally without accounts, a backend or file uploads. Relationships come from the supplied tree; there is no online organism lookup or relationship inference. Version 0.1.2-dev.0 is an unreleased development build. Historical Clade Studio release archives keep their original names.
+The app runs locally without accounts, a backend or file uploads. Relationships come from the supplied tree; there is no online organism lookup or relationship inference. Version 0.1.2-dev.0 is a development prerelease. Historical Clade Studio release archives keep their original names.
 
 Repository: [EliVHD/phyloink](https://github.com/EliVHD/phyloink).
+
+For ready-to-adapt classroom materials, visit **[PhyloInk education](https://github.com/EliVHD/phyloink-education)**: example projects, printable student activities, teacher notes, local Learn scenarios and synthetic lab walkthroughs. It is a finite showcase for educators to adapt; the authoritative usage and Teacher’s Guides remain in this repository.
 
 ## Quick start
 
@@ -64,7 +66,7 @@ npm run examples   # generate example exports under outputs/
 npm run benchmark  # record structured-layout and search timings
 ```
 
-Release files are created under `outputs/releases/`; no GitHub publication occurs. See [release instructions](docs/RELEASING.md), [release notes](release/v0.1.1.md) and [CHANGELOG.md](CHANGELOG.md). This image-free source bundle uses a shorter README than the repository's illustrated overview.
+Release files are created under `outputs/releases/`; no GitHub publication occurs. See [release instructions](docs/RELEASING.md), [release notes](release/v0.1.2-dev.0.md) and [CHANGELOG.md](CHANGELOG.md). This image-free source bundle uses a shorter README than the repository's illustrated overview.
 
 ## License and bundled data
 

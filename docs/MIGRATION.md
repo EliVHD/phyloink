@@ -1,6 +1,6 @@
 # PhyloInk naming migration
 
-**PhyloInk — Phylogenetic Tree Editor & Illustrator** is the new name of Clade Studio. The working version is **0.1.2-dev.0**; this is a development build, not a replacement for an existing release.
+**PhyloInk — Phylogenetic Tree Editor & Illustrator** is the new name of Clade Studio. The current development prerelease is **0.1.2-dev.0**. Historical releases and their downloads retain their original names.
 
 ## Compatibility
 
@@ -45,7 +45,7 @@ The core A01–A05 and A07–A08 packages are integrated on main. A06.1 linkage/
 
 Reusable application code lives here; demonstration scenarios and teaching resources live in the education repository. Each selected lab should have only a small number of adaptable demonstrations. There is no ongoing lesson-production or support commitment.
 
-P00, P02 and P03 implement the naming/compatibility migration, canonical Teacher's Guide, and offline/print integration. P01 and P04–P08 are delivered in the companion education repository, including a dated verification record and an explicitly untested insect-source download. The A01–A08 changes are integrated on main. Their original commits and dated verification records remain historical evidence; final integration checks identify the integrated commit/build separately. This remains an unreleased development version.
+P00, P02 and P03 implement the naming/compatibility migration, canonical Teacher's Guide, and offline/print integration. P01 and P04–P08 are delivered in the companion education repository, including a dated verification record and an explicitly untested insect-source download. The A01–A08 changes are integrated on main. Their original commits and dated verification records remain historical evidence; final integration checks identify the integrated commit/build separately. Version 0.1.2-dev.0 packages these integrated changes as a development prerelease.
 
 ## Verification
 

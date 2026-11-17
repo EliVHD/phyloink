@@ -12,6 +12,8 @@ PhyloInk is a local browser app for designing phylogenetic trees and supplied cl
 
 The app runs on your computer, with no account, backend or file uploads. After installing the development tools and building, it works offline. Relationships come from your input: PhyloInk does not infer them or look up organisms online.
 
+For ready-to-adapt classroom materials, visit **[PhyloInk education](https://github.com/EliVHD/phyloink-education)**: example projects, printable student activities, teacher notes, local Learn scenarios and synthetic lab walkthroughs. It is a finite showcase for educators to adapt; the authoritative usage and Teacher’s Guides remain in this repository.
+
 ![Legacy Clade Studio editor showing a five-tip synthetic circular cladogram, layout controls and the source inspector.](docs/screenshots/editor.png)
 
 *The screenshot records the original Clade Studio interface. The synthetic A–E example demonstrates the editor; its relationships are invented.*
@@ -25,7 +27,7 @@ The app runs on your computer, with no account, backend or file uploads. After i
 - **Refine the artwork:** adjust labels and shared junctions, pin geometry, preview readability improvements, or create a separate artistic copy. The Free arrangement workspace adds manual curves, silhouette borders and fitting.
 - **Keep the evidence:** save editable projects and export paired labeled/unlabeled SVGs with source mappings, references, Sources & Methods and geometry checks.
 
-**Working version: 0.1.2-dev.0.** This is an unreleased development build. The latest historical release is Clade Studio 0.1.1, a maintenance prerelease. Layouts and fitting can still produce drafts with overlaps or spacing issues. The app reports those findings so you can inspect and refine the result.
+**Current prerelease: [PhyloInk 0.1.2-dev.0](https://github.com/EliVHD/phyloink/releases/tag/v0.1.2-dev.0).** See the [release notes](release/v0.1.2-dev.0.md) for the integrated authoring and teaching features. Layouts and fitting can still produce drafts with overlaps or spacing issues. The app reports those findings so you can inspect and refine the result.
 
 ## Quick start
 
@@ -48,7 +50,7 @@ Open **[http://127.0.0.1:4173](http://127.0.0.1:4173)** in your browser. The app
 
 ### From the browser release ZIP
 
-The historical Clade Studio 0.1.1 browser download is named `clade-studio-0.1.1-browser.zip`; new development archives use `phyloink-<version>-browser.zip`. Extract the archive into a folder and serve that folder over local HTTP. For example, if Python 3 is installed:
+Download `phyloink-0.1.2-dev.0-browser.zip` from the [current prerelease](https://github.com/EliVHD/phyloink/releases/tag/v0.1.2-dev.0). Historical Clade Studio archives retain their original names. Extract the archive into a folder and serve that folder over local HTTP. For example, if Python 3 is installed:
 
 ```sh
 cd path/to/extracted-folder
@@ -160,7 +162,7 @@ Repository guidance for coding agents is in [AGENTS.md](AGENTS.md).
 | `npm run examples` | Generate example artwork packages under `outputs/`. |
 | `npm run benchmark` | Record structured-layout and search timings. |
 
-Release packaging is local; it does not create a GitHub repository, push commits or publish a release. See [release instructions](docs/RELEASING.md), [v0.1.1 release notes](release/v0.1.1.md) and the [changelog](CHANGELOG.md).
+Release packaging is local; it does not create a GitHub repository, push commits or publish a release. See [release instructions](docs/RELEASING.md), [current release notes](release/v0.1.2-dev.0.md) and the [changelog](CHANGELOG.md).
 
 ## License and data credits
 

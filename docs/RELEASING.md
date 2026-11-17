@@ -1,10 +1,10 @@
 # Preparing a PhyloInk release
 
-Working development version: **0.1.2-dev.0** · Tag: **v0.1.2-dev.0** · Repository: **[EliVHD/phyloink](https://github.com/EliVHD/phyloink)**.
+Current development prerelease: **0.1.2-dev.0** · Tag: **v0.1.2-dev.0** · Repository: **[EliVHD/phyloink](https://github.com/EliVHD/phyloink)**.
 
 The project is not actively maintained; a release does not promise ongoing support or a release schedule. `npm run release` only creates local files. Publishing a GitHub release requires an explicit owner request. Preserve the repository's configured visibility and all existing release tags and assets.
 
-PhyloInk was formerly Clade Studio. Existing Clade Studio 0.1.0 and 0.1.1 release tags, notes and assets retain their original names. The development version below is not a published release.
+PhyloInk was formerly Clade Studio. Existing Clade Studio 0.1.0 and 0.1.1 release tags, notes and assets retain their original names. The procedure below records the 0.1.2-dev.0 release inputs. For the next release, choose a new version and tag; never rerun publication against an existing tag.
 
 ## 1. Prepare the source
 

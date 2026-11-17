@@ -671,7 +671,7 @@ The application's bundled sources include published phylogenetic research and su
 
 **Version note**
 
-This guide describes the PhyloInk 0.1.2-dev.0 development build, formerly Clade Studio. The software is an unreleased development build, is not actively maintained, and may produce layouts requiring manual review or correction. It is best used with teacher-prepared datasets and projects that have been checked before classroom use.
+This guide describes the PhyloInk 0.1.2-dev.0 development prerelease, formerly Clade Studio. The software is a development prerelease, is not actively maintained, and may produce layouts requiring manual review or correction. It is best used with teacher-prepared datasets and projects that have been checked before classroom use.
 
 ---
 

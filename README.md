@@ -19,7 +19,7 @@ The app runs on your computer, with no account, backend or file uploads. After i
 ## What you can do
 
 - **Choose your source:** open a Newick file, resume a saved project or use the bundled tree-of-life, mammal, primate and plant datasets.
-- **Find and explore:** search the complete source, including hidden tips, and inspect large trees in a separate zoomable Explore view.
+- **Find and explore:** search the complete source, including hidden tips, and inspect either the full source or the current accepted drawing in a separate zoomable Explore view.
 - **Try tree interpretation:** use the temporary Learn workspace for common ancestors, displayed clade members and equivalent drawings, with a six-mammal demonstration or a small sample from your own source.
 - **Choose a layout:** rectangular, circular or fan cladograms; source-distance phylograms; supplied-rank classifications; and unrooted equal-angle or daylight views.
 - **Refine the artwork:** adjust labels and shared junctions, pin geometry, preview readability improvements, or create a separate artistic copy. The Free arrangement workspace adds manual curves, silhouette borders and fitting.
@@ -71,15 +71,21 @@ For controls and troubleshooting, use **Guides** in the app header or open the [
 
 For classroom preparation, read the [Teacher’s Guide](docs/teachers-guide.md), also bundled as an [offline page](http://127.0.0.1:4173/teachers-guide.html) with print styling. The build generates that page from the canonical Markdown. Complete example materials and the additional Newick source directory belong in [PhyloInk education](https://github.com/EliVHD/phyloink-education): a finite showcase of adaptable activities, not a full course or a scheduled content programme. Both authoritative guides remain here.
 
-## Explore a large tree
+## Explore a source or the current drawing
 
 Choose **Explore** above the canvas to inspect the complete source in rectangular, circular or fan form. Scroll to zoom, drag to pan, search a name or source ID, and double-click a group to focus. Shaded groups show exact source-tip counts and reveal more detail as you zoom.
+
+Choose **Inspect relationships** to open the same viewer with **Scope → Current drawing**, starting at the selected identity. This scope follows the accepted reduction or active saved structured/artistic view, including selected taxa, collapsed groups, original source paths and omitted memberships. **Complete source** remains available in the scope selector. Viewing geometry is nonmetric and independent of artwork dimensions, taper and collision avoidance.
+
+Solid diamonds identify authored collapsed groups, which remain fixed when zooming. Dashed shaded regions are temporary viewing summaries. Search covers the whole source in either scope; results distinguish drawing junctions, tips represented inside a group and omitted tips. **Inspect in complete source** opens an exact source identity without expanding the authored drawing. Numeric internal labels remain verbatim in source fields, with no inferred support meaning. The former separate Topology inspection tab and its layout generator are retired.
 
 ![Read-only circular Explore view of the Kew plant tree, with an Arabidopsis search result and its source path highlighted.](docs/screenshots/explore.png)
 
 *Kew release 4.0, with 20,485 sampled terminal identities including outgroups; data under CC BY 4.0. See [screenshot sources and credits](docs/screenshots/README.md).*
 
 **← Editor** returns to the drawing. Exploring leaves the artwork, selection, pins and undo history intact; exports use accepted editor artwork. Explore spacing does not encode distance or time.
+
+Legacy projects containing normalized inspection coordinates still open and save with their exact artwork and pins. Use **Arrange → Make artistic** to explicitly adopt those coordinates before editing or exporting; this does not reshape them. See the [consolidation and verification notes](docs/EXPLORE-CONSOLIDATION.md).
 
 ## Try a teaching idea in Learn
 

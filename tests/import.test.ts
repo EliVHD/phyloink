@@ -14,7 +14,7 @@ test('staged Newick import keeps exact source, duplicate identities and searchab
   const f=await sampleTree(),before=structuredClone(f),text='((Homo_sapiens:1,Homo_sapiens:2)Primates:3,Quercus_robur:4);\n';
   const imported=await prepareLocalImport(text,'my-relations.nwk',null,{source:f.source,recipe:f.project.recipe});assert.equal(imported.kind,'newick');if(imported.kind==='recipe')return;
   assert.equal(imported.source.text,text);assert.equal(imported.project.title,'my-relations');assert.equal(imported.project.authoring.basis.relationshipKind,'unspecified');assert.equal(imported.project.authoring.root.status,'unspecified');assert.deepEqual(imported.project.authoring.source.referenceIds,[]);
-  assert.equal(searchSource(imported.source,'homo sapiens').total,2);assert.equal(searchSource(imported.source,'Primates').results[0].kind,'group');assert.deepEqual(imported.project.recipe.resolvedFrontierSourceNodeIds,imported.reduction.frontier.map(n=>n.id));assert.equal(imported.scientificLayout.mode,'scientific');assert.deepEqual(f,before);
+  assert.equal(searchSource(imported.source,'homo sapiens').total,2);assert.equal(searchSource(imported.source,'Primates').results[0].kind,'group');assert.deepEqual(imported.project.recipe.resolvedFrontierSourceNodeIds,imported.reduction.frontier.map(n=>n.id));assert.deepEqual(f,before);
 });
 test('staged project import retains exact artwork, pins and provenance before any UI replacement',async()=>{
   const f=await sampleTree(),proposal=structuredClone(f.project);proposal.layout.pinnedNodes=[f.rooted.rootId];f.project=acceptCommand(f.project,proposal,f.source,{notes:'Pin the source junction before import testing.'});const text=serializeProject(f.project),current=await sampleTree(),before=structuredClone(current);

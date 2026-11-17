@@ -23,3 +23,25 @@
 
 /* Keep the descriptive view controls reachable on narrow canvases. */
 .canvas-toolbar{min-height:61px;height:auto;padding-top:8px;padding-bottom:8px;flex-wrap:wrap}.view-switch{max-width:100%;min-width:0;overflow-x:auto;scrollbar-width:thin}.view-switch button{white-space:nowrap;flex-shrink:0}.toolbar-right{flex-shrink:0}
+
+/* Shared source / accepted-drawing inspection uses screen spacing, never artwork geometry. */
+.explore-toolbar { flex-wrap: wrap; }
+.explore-heading { flex: 1 1 220px; }
+#explore-legend { position: static; padding: 8px 22px; border-bottom: 1px solid var(--border); margin: 0; font-size: 12px; line-height: 1.5; }
+.explore-authored { fill: #315d7a; stroke: #fff; stroke-width: 1.2; cursor: pointer; }
+.explore-selected-authored { fill: none; stroke: #a74e11; stroke-width: 2; cursor: pointer; }
+.explore-drawing-note { padding: 10px; border-left: 3px solid #315d7a; background: #eef4f9; }
+.explore-sidebar .button { white-space: normal; margin-bottom: 8px; }
+.explore-sidebar .text-button { font-size: 11px; }
+@media (max-width: 700px) {
+  .explore-shell { height: auto; min-height: calc(100dvh - 70px); }
+  .explore-heading { flex-basis: 180px; }
+  .explore-heading strong { white-space: normal; }
+  .explore-toolbar label { font-size: 12px; }
+  .explore-toolbar select { max-width: 170px; }
+  .explore-body { flex-direction: column-reverse; flex: none; }
+  #explore-stage { flex: none; height: 55dvh; min-height: 320px; }
+  .explore-sidebar { width: auto; max-height: 60dvh; border-right: 0; border-top: 1px solid var(--border); padding: 14px; }
+  .explore-footer { flex-wrap: wrap; }
+  #explore-legend { padding: 8px 12px; }
+}

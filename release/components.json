@@ -30,7 +30,8 @@
         "P00 naming migration, 2026-11-11: package name and development version metadata only; locked dependency versions, integrity values, licenses and development-only scope are unchanged. Legacy project/build/manifest identifiers and historical fixtures remain compatible.",
         "P02/P03, 2026-11-11: incorporate and edit the user-supplied Teacher's Guide; generate offline HTML from its canonical Markdown using an original build-only renderer. No third-party runtime code or new dependency.",
         "A01 Learn, 2026-11-11: original temporary practice model, UI, tests and guide updates; uses the separately reviewed bundled Upham source without changing its bytes or terms. No new data, third-party implementation, runtime dependency or saved project field.",
-        "A02, 2026-11-11: original local scenario format, staged validation, question-setup UI and regression tests. Reuses separately reviewed sources and citations; no new data, dependency, service or project schema field."
+        "A02, 2026-11-11: original local scenario format, staged validation, question-setup UI and regression tests. Reuses separately reviewed sources and citations; no new data, dependency, service or project schema field.",
+        "A07, 2026-11-11: original shared Explore source/accepted-drawing scopes and compact topology snapshots, retired standalone inspection initializer, preserved legacy-coordinate compatibility and regression coverage. No new data, dependencies or saved-project fields."
       ],
       "obligations": [],
       "files": [
@@ -41,6 +42,7 @@
         "LICENSE",
         "REDISTRIBUTION.md",
         "data/datasets/audit.json",
+        "docs/EXPLORE-CONSOLIDATION.md",
         "docs/LEARN-VERIFICATION.md",
         "docs/LEARNING-SCENARIOS.md",
         "docs/MIGRATION.md",
@@ -67,7 +69,9 @@
         "src/datasets.ts",
         "src/demo.ts",
         "src/design.ts",
+        "src/explore/drawing.ts",
         "src/explore/index.ts",
+        "src/explore/input.ts",
         "src/explore/render.ts",
         "src/explore/ui.ts",
         "src/explore/worker.ts",
@@ -120,6 +124,7 @@
         "tests/design.test.ts",
         "tests/distribution.test.mjs",
         "tests/editor.test.ts",
+        "tests/explore-drawing.test.ts",
         "tests/explore.test.ts",
         "tests/fitting.test.ts",
         "tests/fixtures/scientific-basis-v2.json",

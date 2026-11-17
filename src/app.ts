@@ -1,4 +1,5 @@
 import { ExploreController } from './explore/ui.ts';
+import { prepareExploreInput } from './explore/input.ts';
 import { LearnController } from './learn/ui.ts';
 import { MAX_LEARN_TIPS } from './learn/model.ts';
 import { prepareLocalImport, prepareBundledDataset } from './import.ts';
@@ -35,8 +36,8 @@ const num = (id: string): number => Number(input(id).value);
 let source: Source, rooted: Rooted, reduction: Reduction, project: Project;
 let exportingBuild: BuildInfo;
 let exportingBuildManifest: BuildManifest;
-let qa: QA | null = null, selected = new Set<string>(), view: 'organic' | 'scientific' = 'organic';
-let scientificLayout: Layout | null = null, showNodes = true, showIssues = true, spaceDown = false;
+let qa: QA | null = null, selected = new Set<string>();
+let showNodes = true, showIssues = true, spaceDown = false;
 let scienceVersion = 0, editVersion = 0, ready = false, pendingReduction = false;
 let desiredRecipe: Recipe | null = null;
 let fitPreview: FitResult | null = null, pendingFit = false, compareOriginal = false, fitVersion = 0;
@@ -71,7 +72,8 @@ function toast(message: string, error = false): void {
   clearTimeout(toastTimeout); toastTimeout = setTimeout(() => { box.hidden = true; }, error ? 9000 : 5000);
 }
 async function guard(action: () => unknown): Promise<void> { try { await action(); } catch (error) { if (error instanceof Error && error.message === 'superseded') return; toast(error instanceof Error ? error.message : String(error), true); } }
-function workingLayout(): Layout { return view === 'scientific' ? scientificLayout! : fitPreview && !compareOriginal ? fitPreview.layout : project.layout; }
+function workingLayout(): Layout { return fitPreview && !compareOriginal ? fitPreview.layout : project.layout; }
+function legacyInspection(): boolean { return project.layout.mode === 'scientific'; }
 function invalidate(): void { clearFit(); editVersion++; qa = null; unsaved = true; renderQA(); }
 function accepted(before: Project, evidence: CommandEvidence = {}): void {
   if (!hasAuthoring(before) || !hasAuthoring(project)) throw new Error('Missing authoring state.');
@@ -93,7 +95,7 @@ function mutate(action: () => void, affectsGeometry = true, evidence: CommandEvi
   if (fitPreview) throw new Error('Keep or discard the fit preview before editing.');
   clearFit(); commitOpacity();
   if (!semanticCapabilities(project.authoring!.root, 'artistic', project.authoring!.edgeMeasure, project.authoring!.basis).canEditGeometry) throw new Error('This relationship adapter is not implemented. Edit the basis metadata or inspect the saved artwork.');
-  if (view === 'scientific') throw new Error('Switch to Free arrangement to edit geometry. Topology inspection is read-only.');
+  if (legacyInspection() && affectsGeometry) throw new Error('Stored legacy inspection artwork is read-only. Choose Arrange → Make artistic to edit it.');
   if (pendingReduction) throw new Error('Wait for the pending reduction to finish before editing.');
   const before = structuredClone(project);
   try { action(); accepted(before, evidence); } catch (error) { project = before; render(); throw error; }
@@ -115,6 +117,7 @@ function workerTask<T>(kind: 'reduce' | 'validate' | 'fit' | 'structured', paylo
   });
 }
 async function applyRecipe(next: Recipe, message?: string): Promise<void> {
+  if (legacyInspection()) throw new Error('Choose Arrange → Make artistic before changing a stored legacy inspection reduction.');
   if (explorer.active) explorer.close();
   if (learner.active) learner.close();
   endDrag(true); commitOpacity(); clearFit();
@@ -126,7 +129,7 @@ async function applyRecipe(next: Recipe, message?: string): Promise<void> {
     project.recipe = next; rooted = orient(source, next.root); reduction = result;
     project.layout = reconcileLayout(rooted, reduction, project.presentation, project.layout); syncRecipe();
     accepted(before, { kind: 'scientific', methods: ['maximal-frontier', 'organic-initializer'], parameters: { recipe: project.recipe }, notes: 'Accepted reduction; existing and hidden geometry retained by reconciliation.' });
-    scientificLayout = generateLayout(rooted, reduction, project.presentation, 'scientific', project.layout); invalidate();
+    invalidate();
     if (message) toast(message);
   } finally { if (version === scienceVersion) { pendingReduction = false; desiredRecipe = null; render(); } }
 }
@@ -159,17 +162,17 @@ function updateButtons(): void {
   ($('undo-btn') as HTMLButtonElement).disabled = (!history.past.length && !fitPreview && !pendingFit) || pendingReduction;
   ($('redo-btn') as HTMLButtonElement).disabled = !history.future.length || pendingReduction || pendingFit || !!fitPreview;
   for (const id of ['export-btn', 'save-btn', 'validate-btn']) ($<HTMLButtonElement>(id)).disabled = !ready || pendingReduction || pendingFit || !!fitPreview;
-  $<HTMLFieldSetElement>('shape-fields').disabled = pendingReduction || view === 'scientific' || pendingFit || !!fitPreview;
-  for (const id of ['artwork-style', 'fit-artwork-style']) $<HTMLFieldSetElement>(id).disabled = view !== 'organic' || pendingReduction || pendingFit || !!fitPreview;
+  $<HTMLFieldSetElement>('shape-fields').disabled = pendingReduction || legacyInspection() || pendingFit || !!fitPreview;
+  for (const id of ['artwork-style', 'fit-artwork-style']) $<HTMLFieldSetElement>(id).disabled = legacyInspection() || pendingReduction || pendingFit || !!fitPreview;
   $('structured-view').classList.toggle('active',structuredController.enabled);$('structured-view').textContent=structuredController.view?.intent==='artistic'?'Artistic copy':structuredController.view?.intent==='phylogram'?'Phylogram':structuredController.view?.intent==='taxonomy'?'Classification':structuredController.view?.intent==='unrooted'?'Unrooted':structuredController.view?.intent==='cladogram'?'Cladogram':'Structured layouts';
-  if(structuredController.enabled){$('organic-view').classList.remove('active');$('scientific-view').classList.remove('active');}
+  if(structuredController.enabled){$('organic-view').classList.remove('active');}
   $('import-btn').toggleAttribute('disabled',!ready||importing||pendingReduction||pendingFit||!!fitPreview||structuredController.pending);$('import-btn').textContent=importing?'Checking file…':'Open file';
   $('datasets-btn').toggleAttribute('disabled',!ready||importing||pendingReduction||pendingFit||!!fitPreview||structuredController.pending);
   $('open-dataset').toggleAttribute('disabled',importing);
   $('save-btn').toggleAttribute('disabled',!ready||pendingReduction||pendingFit||!!fitPreview||structuredController.pending);
-  $('export-btn').title=!structuredController.enabled&&view==='scientific'?'Return to Free arrangement or an accepted Layout view to export a design.':'';
-  if(structuredController.enabled)$('export-btn').toggleAttribute('disabled',!structuredController.exportable);else if(view==='scientific')$('export-btn').setAttribute('disabled','');
-  $('canvas-context').textContent = structuredController.enabled ? structuredController.busy?'Building structured view…':structuredController.preview?structuredController.dragging?'Moving artistic geometry':'Structured preview · original retained':structuredController.view?.intent==='artistic'?'Artistic copy · source connectivity retained':structuredController.view?.intent==='taxonomy'?'Classification · supplied parent links':structuredController.view?.intent==='unrooted'?'Unrooted · display origin only':structuredController.view?.intent==='phylogram'?'Phylogram · source distances':'Nonmetric structured cladogram' : pendingFit ? 'Fitting junctions…' : fitPreview ? compareOriginal ? 'Comparing original arrangement' : 'Preview · artwork unchanged' : pendingReduction ? 'Recalculating reduction…' : view === 'scientific' ? 'Topology inspection · normalized depth' : 'Editable arrangement';
+  $('export-btn').title=!structuredController.enabled&&legacyInspection()?'Adopt legacy inspection artwork with Arrange → Make artistic before exporting.':'';
+  if(structuredController.enabled)$('export-btn').toggleAttribute('disabled',!structuredController.exportable);else if(legacyInspection())$('export-btn').setAttribute('disabled','');
+  $('canvas-context').textContent = structuredController.enabled ? structuredController.busy?'Building structured view…':structuredController.preview?structuredController.dragging?'Moving artistic geometry':'Structured preview · original retained':structuredController.view?.intent==='artistic'?'Artistic copy · source connectivity retained':structuredController.view?.intent==='taxonomy'?'Classification · supplied parent links':structuredController.view?.intent==='unrooted'?'Unrooted · display origin only':structuredController.view?.intent==='phylogram'?'Phylogram · source distances':'Nonmetric structured cladogram' : pendingFit ? 'Fitting junctions…' : fitPreview ? compareOriginal ? 'Comparing original arrangement' : 'Preview · artwork unchanged' : pendingReduction ? 'Recalculating reduction…' : legacyInspection() ? 'Legacy inspection artwork · preserved' : 'Editable arrangement';
 }
 function render(): void {
   if (!ready) return;
@@ -234,7 +237,7 @@ function renderCanvas(): void {
   const displayQA = displayedQA();
   const issueMarks = displayQA && showIssues ? displayQA.issues.slice(0, 500).filter(x => x.point).map(x => `<circle cx="${x.point!.x}" cy="${x.point!.y}" r="1.2" fill="none" stroke="${x.type === 'crossing' || x.type === 'self-intersection' ? '#bd6654' : '#c99e61'}" stroke-width=".22" pointer-events="none"/>`).join('') : '';
   let handles = '';
-  if (selected.size === 1 && view === 'organic') {
+  if (selected.size === 1 && !legacyInspection()) {
     const id = currentId(), route = layout.routes[id], parent = rooted.nodes[id].parent;
     if (route && parent && reduction.visible.includes(id)) {
       route.segments.forEach((s, i) => {
@@ -246,7 +249,7 @@ function renderCanvas(): void {
     }
   }
   svg.innerHTML = `<defs><filter id="paper-shadow" x="-20%" y="-10%" width="140%" height="130%"><feDropShadow dx="0" dy="1" stdDeviation="1.8" flood-color="#35432a" flood-opacity=".07"/></filter></defs><rect x="0" y="0" width="${p.widthMm}" height="${p.heightMm}" fill="#fffefa" stroke="#e1e6d9" stroke-width=".18" filter="url(#paper-shadow)"/>${project.design?.referenceImage?.layer !== 'above' ? referenceMarkup() : ''}<g id="preview-artwork">${paths.join('')}</g>${project.design?.referenceImage?.layer === 'above' ? referenceMarkup() : ''}<g>${hits.join('')}</g><g>${nodes}</g><g>${labels}</g><g>${handles}</g><g>${issueMarks}</g>${designMarkup()}${directionMarkup()}${fitPreviewMarkup()}<g id="selection-overlay"></g>`;
-  svg.classList.toggle('fit-preview-active', !!fitPreview); svg.classList.toggle('scientific-readonly', view === 'scientific'); setViewBox();
+  svg.classList.toggle('fit-preview-active', !!fitPreview); svg.classList.toggle('scientific-readonly', legacyInspection()); setViewBox();
 }
 function renderInspector(): void {
   if(structuredController.enabled){$('selection-count').textContent=String(structuredController.selected.size);$('inspector-content').innerHTML=structuredController.inspector();return;}
@@ -312,7 +315,7 @@ function download(name: string, data: string | Uint8Array, type: string): void {
 }
 function snapshot(): Project { commitOpacity(); validateDesign(project.design, rooted); return { ...structuredClone(project), recipe: savedRecipe(), selection: [...selected] }; }
 async function exportPackage(): Promise<void> {
-  if(!structuredController.enabled&&view==='scientific')throw new Error('Topology inspection uses normalized spacing. Return to Free arrangement or an accepted Layout view to export that design.');
+  if(!structuredController.enabled&&legacyInspection())throw new Error('Stored legacy inspection artwork uses normalized spacing. Choose Arrange → Make artistic before exporting, or use an accepted structured view.');
   if(structuredController.enabled){if(!structuredController.exportable)throw new Error('Accept a current structured layout before exporting.');const state=snapshot();if(!hasAuthoring(state))throw new Error('Missing document.');const files=exportStructuredFiles(source,state,exportingBuild);files['build-manifest.json']=JSON.stringify(exportingBuildManifest,null,2);addArtifactManifest(files,state);download(`phyloink-${structuredController.view!.intent}-${structuredController.qaFor(structuredController.view!).status}.zip`,zipFiles(files),'application/zip');toast('Structured package exported with source paths, represented/omitted memberships, exact scene and Sources & Methods.');return;}
   toast('Checking the artwork and assembling the export package…');
   const result = qa ?? await runValidation(); if (!result) return;
@@ -342,17 +345,14 @@ function installPrepared(prepared:Exclude<PreparedImport,{kind:'recipe'}>):void 
     endDrag(true);commitOpacity();
     if(unsaved){const state=snapshot();if(!hasAuthoring(state))throw new Error('Missing document.');download('before-import.treeproject.json',serializeProject(state,exportingBuild),'application/json');}
     clearTimeout(sliderTimeout);structuredController.discard();clearFit();for(const task of workers.values()){task.worker.terminate();task.reject(new Error('superseded'));}workers.clear();
-    scienceVersion++;editVersion++;source=prepared.source;rooted=prepared.rooted;reduction=prepared.reduction;project=prepared.project;scientificLayout=prepared.scientificLayout;
-    history.clear();selected=new Set(project.selection??[]);qa=null;pendingReduction=false;desiredRecipe=null;unsaved=prepared.kind==='newick';view='organic';structuredController.sync();
-    if(structuredController.enabled)activateTeacherPanel();else setView('organic');render();fit();
+    scienceVersion++;editVersion++;source=prepared.source;rooted=prepared.rooted;reduction=prepared.reduction;project=prepared.project;
+    history.clear();selected=new Set(project.selection??[]);qa=null;pendingReduction=false;desiredRecipe=null;unsaved=prepared.kind==='newick';structuredController.sync();
+    if(structuredController.enabled)activateTeacherPanel();else freeArrangement();render();fit();
 }
-function setView(next: 'organic' | 'scientific'): void {
-  if(next!==view){qa=null;editVersion++;}
+function freeArrangement(): void {
   structuredController.close();
   endDrag(true); commitOpacity(); clearFit(); designTool = 'edit'; drawingPoints = [];
-  view = next; $('organic-view').classList.toggle('active', view === 'organic'); $('scientific-view').classList.toggle('active', view === 'scientific');
-  if (next === 'scientific') scientificLayout = generateLayout(rooted, reduction, project.presentation, 'scientific', project.layout);
-  render();
+  $('organic-view').classList.add('active'); render();
 }
 function restoreHistory(direction: 'undo' | 'redo'): void {
   if(structuredController.pending){structuredController.discard();render();return;}
@@ -361,12 +361,12 @@ function restoreHistory(direction: 'undo' | 'redo'): void {
   if (pendingReduction) return;
   const restored = history[direction](project); if (!restored) return;
   project = restored; rooted = orient(source, project.recipe.root); reduction = reduce(source, rooted, project.recipe, true);
-  scienceVersion++; scientificLayout = generateLayout(rooted, reduction, project.presentation, 'scientific', project.layout); structuredController.sync(); if(structuredController.enabled)activateTeacherPanel(); invalidate(); render();fit();
+  scienceVersion++;  structuredController.sync(); if(structuredController.enabled)activateTeacherPanel(); invalidate(); render();fit();
 }
 
 // Event delegation keeps controls stable across science and selection updates.
 document.querySelectorAll<HTMLButtonElement>('[data-panel]').forEach(tab => tab.addEventListener('click', () => {
-  if(tab.dataset.panel==='structured'){endDrag(true);clearFit();structuredController.open();}else if(structuredController.enabled)setView('organic');
+  if(tab.dataset.panel==='structured'){endDrag(true);clearFit();structuredController.open();}else if(structuredController.enabled)freeArrangement();
   document.querySelectorAll<HTMLButtonElement>('[data-panel]').forEach(button => { const active = button === tab; button.classList.toggle('active', active); button.setAttribute('aria-selected', String(active)); $(`panel-${button.dataset.panel}`).hidden = !active; });
 }));
 function activateTeacherPanel():void{document.querySelectorAll<HTMLButtonElement>('[data-panel]').forEach(button=>{const active=button.dataset.panel==='structured';button.classList.toggle('active',active);button.setAttribute('aria-selected',String(active));$(`panel-${button.dataset.panel}`).hidden=!active;});}
@@ -374,17 +374,17 @@ on('teacher-example',async()=>{
   if(pendingReduction||pendingFit||fitPreview||structuredController.pending)throw new Error('Finish or discard the pending proposal before opening another project.');
   if(unsaved){const state=snapshot();if(!hasAuthoring(state))throw new Error('Missing document.');download('before-sample-tree.treeproject.json',serializeProject(state,exportingBuild),'application/json');}
   const example=await sampleTree(exportingBuild);source=example.source;rooted=example.rooted;reduction=example.reduction;project=example.project;history.clear();selected.clear();qa=null;scienceVersion++;editVersion++;unsaved=false;desiredRecipe=null;
-  scientificLayout=generateLayout(rooted,reduction,project.presentation,'scientific',project.layout);structuredController.sync();structuredController.open();activateTeacherPanel();render();fit();toast('New synthetic A–E sample opened. Its topology does not describe real organisms.');
+  structuredController.sync();structuredController.open();activateTeacherPanel();render();fit();toast('New synthetic A–E sample opened. Its topology does not describe real organisms.');
 });
 on('teacher-class-example',async()=>{
   if(pendingReduction||pendingFit||fitPreview||structuredController.pending)throw new Error('Finish or discard the pending proposal before opening another project.');
   if(unsaved){const state=snapshot();if(!hasAuthoring(state))throw new Error('Missing document.');download('before-classification-sample.treeproject.json',serializeProject(state,exportingBuild),'application/json');}
   const example=await classificationSample(exportingBuild);source=example.source;rooted=example.rooted;reduction=example.reduction;project=example.project;history.clear();selected.clear();qa=null;scienceVersion++;editVersion++;unsaved=false;desiredRecipe=null;
-  scientificLayout=generateLayout(rooted,reduction,project.presentation,'scientific',project.layout);structuredController.sync();structuredController.open();structuredController.setClassificationSpec(example.spec);activateTeacherPanel();render();fit();toast('Synthetic classification opened. Groups and ranks are invented; parent links do not assert ancestry.');
+  structuredController.sync();structuredController.open();structuredController.setClassificationSpec(example.spec);activateTeacherPanel();render();fit();toast('Synthetic classification opened. Groups and ranks are invented; parent links do not assert ancestry.');
 });
 on('structured-view',()=>{endDrag(true);clearFit();structuredController.open();activateTeacherPanel();});
-on('organic-view', () => setView('organic')); on('scientific-view', () => setView('scientific'));
-on('make-artistic', () => { setView('organic'); mutate(() => { project.layout.mode = 'organic'; project.authoring!.viewName = 'Artistic arrangement'; }, false, { notes: 'Explicitly adopted legacy inspection coordinates as an artistic arrangement; no coordinates changed.' }); });
+on('organic-view', freeArrangement);
+on('make-artistic', () => { freeArrangement(); mutate(() => { project.layout.mode = 'organic'; project.authoring!.viewName = 'Artistic arrangement'; }, false, { notes: 'Explicitly adopted legacy inspection coordinates as an artistic arrangement; no coordinates changed.' }); });
 on('fit-btn', fit); on('undo-btn', () => restoreHistory('undo')); on('redo-btn', () => restoreHistory('redo'));
 on('import-btn', () => input('file-input').click());
 input('file-input').addEventListener('change', () => { const file = input('file-input').files?.[0]; if (file) void guard(() => importFile(file)); input('file-input').value = ''; });
@@ -397,7 +397,7 @@ on('routing-demo-btn', () => {
   rooted = orient(source, project.recipe.root); reduction = reduce(source, rooted, project.recipe, true);
   project.authoring!.root = legacyRootState(project.recipe.root, source);
   accepted(before, { kind: 'layout', methods: ['routing-demo', 'maximal-frontier'], replace: true, parameters: { recipe: project.recipe }, notes: 'Applied the exact source-derived routing demonstration.' });
-  scienceVersion++; selected.clear(); invalidate(); setView('organic'); render(); fit();
+  scienceVersion++; selected.clear(); invalidate(); freeArrangement(); render(); fit();
   toast('Six-endpoint routing demonstration loaded. Every branch is from the original source; Undo restores your previous artwork.');
 });
 on('reset-example', async () => {
@@ -456,7 +456,7 @@ for (const [id, key] of Object.entries({ 'page-width': 'widthMm', 'page-height':
     }
     project.presentation = next; validateLayout(project.layout, rooted, reduction); validateDesign(project.design, rooted);
     });
-    scientificLayout = generateLayout(rooted, reduction, next, 'scientific', project.layout); if (key === 'widthMm' || key === 'heightMm') fit();
+    if (key === 'widthMm' || key === 'heightMm') fit();
   }));
 }
 for (const id of ['allow-curves', 'fit-allow-curves']) input(id).addEventListener('change', () => guard(() => mutate(() => {
@@ -507,7 +507,7 @@ on('source-info-btn', () => {
     project.authoring!.root = legacyRootState(project.recipe.root, source);
     for (const b of project.design?.borders ?? []) b.assignments = [];
     accepted(before, { kind: 'scientific', methods: ['root-orientation', 'maximal-frontier', 'organic-initializer'], replace: true, parameters: { root: next.root, recipe: project.recipe }, notes: 'Explicit rooting assumption and fresh arrangement.' });
-    designTool = 'edit'; selected.clear(); scientificLayout = generateLayout(rooted, reduction, project.presentation, 'scientific', project.layout); invalidate(); render(); $<HTMLDialogElement>('source-dialog').close(); toast('Biological root changed explicitly. Source splits and original edge identities are retained.');
+    designTool = 'edit'; selected.clear();  invalidate(); render(); $<HTMLDialogElement>('source-dialog').close(); toast('Biological root changed explicitly. Source splits and original edge identities are retained.');
   });
   $('biological-root-controls').hidden=project.authoring!.basis.relationshipKind==='classification'||!!structuredController.view?.scene.unrooted||!!structuredController.view?.artistic?.baseScene.unrooted;
   $<HTMLButtonElement>('apply-root').disabled = project.authoring!.basis.relationshipKind !== 'phylogeny' || project.authoring!.basis.entityKind === 'unspecified';
@@ -583,8 +583,8 @@ function setDesignTool(tool: DesignTool): void {
 function renderDesignControls(): void {
   if (!ready) return;
   const d = project.design, b = activeBorder(), r = d?.referenceImage;
-  $<HTMLFieldSetElement>('shape-fields').disabled = pendingReduction || view === 'scientific' || pendingFit || !!fitPreview;
-  $('shape-readonly').hidden = view === 'organic';
+  $<HTMLFieldSetElement>('shape-fields').disabled = pendingReduction || legacyInspection() || pendingFit || !!fitPreview;
+  $('shape-readonly').hidden = !legacyInspection();
   $('border-scope-count').textContent = `${borderScope().length} endpoints in current scope`;
   $('border-list').innerHTML = d?.borders.length ? d.borders.map(b => `<option value="${b.id}">${esc(b.name)} · ${b.assignments.length} endpoints</option>`).join('') : '<option value="">No borders yet</option>';
   input('border-list').value = b?.id ?? '';
@@ -609,16 +609,16 @@ function renderDesignControls(): void {
   }
   for (const [id, tool] of [['select-endpoints', 'select-endpoints'], ['draw-border', 'draw-border'], ['edit-border', 'edit-border'], ['move-reference', 'move-reference']] as const) $(id).setAttribute('aria-pressed', String(designTool === tool));
   const hint = designTool === 'draw-direction' ? 'Drag an arrow from where branches come from toward where they should point. Release to save its angle; Esc cancels.' : designTool === 'select-endpoints' ? 'Click endpoints or drag a box. Shift adds/removes endpoints or adds a box. Then draw a border or assign to a saved border.' : designTool === 'draw-border' ? 'Drag to draw a border. Release to preview. Esc cancels.' : designTool === 'edit-border' ? 'Drag a border point or its line. Apply to update endpoints. Esc returns to branches.' : designTool === 'move-reference' ? 'Drag the image to align it. Esc locks it for branch editing.' : '';
-  $('design-mode-hint').textContent = hint; $('design-mode-hint').hidden = !hint || view === 'scientific';
+  $('design-mode-hint').textContent = hint; $('design-mode-hint').hidden = !hint || legacyInspection();
   $('stage').dataset.tool = designTool;
 }
 function referenceMarkup(): string {
   const r = project.design?.referenceImage;
-  if (view !== 'organic' || !r?.visible) return '';
+  if (legacyInspection() || !r?.visible) return '';
   return `<image id="reference-image" href="${esc(r.dataUrl)}" x="${r.x}" y="${r.y}" width="${r.widthMm}" height="${r.heightMm}" opacity="${r.opacity}" transform="rotate(${r.rotationDeg} ${r.x + r.widthMm / 2} ${r.y + r.heightMm / 2})" preserveAspectRatio="none" pointer-events="none"/>`;
 }
 function designMarkup(): string {
-  if (view !== 'organic') return '';
+  if (legacyInspection()) return '';
   const d = project.design, markup: string[] = [];
   if (d?.showBorders) for (const b of d.borders) {
     const active = b.id === d.activeBorderId, path = `M${b.points.map(p => `${p.x},${p.y}`).join('L')}${b.closed ? 'Z' : ''}`;
@@ -679,9 +679,9 @@ function selectedJunctions(): string[] {
 }
 function renderFitControls(): void {
   if (!ready) return;
-  const settings = fitSettings(), readonly = view !== 'organic' || pendingReduction;
+  const settings = fitSettings(), readonly = legacyInspection() || pendingReduction;
   $<HTMLFieldSetElement>('auto-fit-settings').disabled = readonly;
-  $('fit-readonly').hidden = view === 'organic';
+  $('fit-readonly').hidden = !legacyInspection();
   input('fit-border-scope').value = settings.borderScope;
   for (const [id, key] of [['fit-depth', 'junctionDepth'], ['fit-flow', 'preserveFlow'], ['fit-strength', 'strength'], ['fit-smoothing', 'smoothing'], ['fit-routing', 'routing'], ['fit-fork-spread', 'forkSpread']] as const) {
     input(id).value = String(Math.round((settings[key] ?? 0) * 100)); $(`${id}-value`).textContent = `${Math.round((settings[key] ?? 0) * 100)}%`;
@@ -717,7 +717,7 @@ function renderFitControls(): void {
     `<p class="${r.afterQA.status === 'checked' ? 'fit-good' : 'fit-warning'}">${r.afterQA.status === 'checked' ? 'Geometry checks passed at the current physical dimensions.' : 'Draft fit. Geometry or numbered-label checks still need attention.'} ${r.afterQA.annotationCollisions} numbered-label conflicts. Source coverage and connections preserved.</p>`;
 }
 async function previewAutomaticFit(): Promise<void> {
-  if (view !== 'organic') throw new Error('Switch to Free arrangement before fitting.');
+  if (legacyInspection()) throw new Error('Switch to Free arrangement before fitting.');
   if (pendingReduction) throw new Error('Wait for the reduction to finish.');
   endDrag(true); commitOpacity(); clearFit(); designTool = 'edit';
   const settings = structuredClone(fitSettings()); validateFitSettings(settings);
@@ -733,7 +733,7 @@ async function previewAutomaticFit(): Promise<void> {
   } finally { if (version === fitVersion) { pendingFit = false; render(); } }
 }
 function fitPreviewMarkup(): string {
-  if (!fitPreview || compareOriginal || view !== 'organic') return '';
+  if (!fitPreview || compareOriginal || legacyInspection()) return '';
   return `<g id="fit-junction-preview" pointer-events="none">${fitPreview.movedJunctions.map(j => `<path d="M${j.from.x},${j.from.y}L${j.to.x},${j.to.y}" stroke="#729bb1" stroke-width=".16" stroke-dasharray=".7 .5" opacity=".6"/><circle cx="${j.from.x}" cy="${j.from.y}" r=".5" fill="none" stroke="#8ca4b1" stroke-width=".15"/><circle data-fit-junction="${j.id}" cx="${j.to.x}" cy="${j.to.y}" r=".8" fill="#4282a4" stroke="#fff" stroke-width=".2"/>`).join('')}</g>`;
 }
 function directionBorder(id = directionScope): EndpointBorder | undefined { return project.design?.borders.find(b => b.id === id); }
@@ -765,7 +765,7 @@ function saveDirection(value: BranchDirection | null | undefined, scope = direct
   }, false);
 }
 function directionMarkup(): string {
-  if (view !== 'organic' || (fitPreview && compareOriginal)) return '';
+  if (legacyInspection() || (fitPreview && compareOriginal)) return '';
   const borders = project.design?.borders ?? [], arrows: string[] = [];
   const arrow = (key: string, center: Point, d: BranchDirection, label: string) => {
     if (!d.strength) return;
@@ -856,7 +856,7 @@ on('move-reference', () => setDesignTool(designTool === 'move-reference' ? 'edit
 on('fit-reference', () => mutate(() => { fitReference(design().referenceImage!, project.presentation); }, false));
 on('remove-reference', () => { setDesignTool('edit'); imageRequest++; mutate(() => { delete design().referenceImage; }, false); });
 input('reference-opacity').addEventListener('input', () => {
-  const r = project.design?.referenceImage; if (!r || pendingReduction || view !== 'organic') return;
+  const r = project.design?.referenceImage; if (!r || pendingReduction || legacyInspection()) return;
   opacityBefore ??= structuredClone(project); r.opacity = num('reference-opacity') / 100; unsaved = true;
   $('reference-opacity-value').textContent = `${Math.round(r.opacity * 100)}%`; renderCanvas();
 });
@@ -914,7 +914,7 @@ $('stage').addEventListener('pointerdown', event => {
     ids = input('move-subtree').checked ? [...new Set([...selected].flatMap(x => subtreeIds(rooted, x)))] : [...selected];
     kind = node ? 'nodes' : 'pan';
   } else { if (!event.shiftKey) { selected.clear(); renderInspector(); renderCanvas(); } }
-  if (view === 'scientific' && kind !== 'pan' && kind !== 'area') return;
+  if (legacyInspection() && kind !== 'pan' && kind !== 'area') return;
   if ((pendingFit || fitPreview) && !['pan', 'area'].includes(kind)) { toast('Keep or discard the fit preview before editing.'); return; }
   if (pendingReduction && !['pan', 'area'].includes(kind)) { toast('Wait for the reduction to finish.'); return; }
   if ((kind === 'handle' || kind === 'waypoint') && project.layout.pinnedEdges.includes(ids[0])) { toast('Unpin this edge before editing its route.'); return; }
@@ -1003,7 +1003,7 @@ window.addEventListener('keydown', event => {
   if (event.code === 'Space') { spaceDown = true; event.preventDefault(); }
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') { event.preventDefault(); restoreHistory(event.shiftKey ? 'redo' : 'undo'); }
   if (event.key === 'Escape') { structuredController.discard(); clearFit(); setDesignTool('edit'); render(); }
-  if (!structuredController.enabled && selected.size && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key) && view === 'organic' && designTool === 'edit') {
+  if (!structuredController.enabled && selected.size && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key) && !legacyInspection() && designTool === 'edit') {
     event.preventDefault(); const d = event.shiftKey ? 1 : .1; void guard(() => mutate(() => moveNodes(project.layout, rooted, [...selected], { x: event.key === 'ArrowLeft' ? -d : event.key === 'ArrowRight' ? d : 0, y: event.key === 'ArrowUp' ? -d : event.key === 'ArrowDown' ? d : 0 })));
   }
 });
@@ -1011,10 +1011,16 @@ window.addEventListener('keyup', event => { if (event.code === 'Space') spaceDow
 window.addEventListener('blur', () => { spaceDown = false; endDrag(true); });
 window.addEventListener('beforeunload', event => { if (unsaved) { event.preventDefault(); event.returnValue = ''; } });
 
-on('explore-view-btn', () => {
-  if (!ready || importing || pendingReduction || pendingFit || fitPreview || structuredController.pending || structuredController.preview) throw new Error('Finish or discard the current preview before exploring the source.');
-  explorer.open({source, root: project.recipe.root, childOrder: project.layout.childOrder, corrections: project.corrections, basis: project.authoring!.basis, rootState: project.authoring!.root, title: sourceHeading(source.sha256, project.provenance, project.authoring?.basis.name).title});
-});
+function openExplore(scope: 'source' | 'drawing'): void {
+  if (!ready || importing || pendingReduction || pendingFit || fitPreview || workers.size || structuredController.pending || structuredController.dragging) throw new Error('Finish calculations and keep or discard the current preview before exploring.');
+  if (!hasAuthoring(project)) throw new Error('Missing authoring state.');
+  const view = structuredController.enabled ? activeStructuredView(project) : null;
+  const selection = [...(structuredController.enabled ? structuredController.selected : selected)].at(-1);
+  const selectedId = scope === 'source' && selection === 'virtual-root' ? undefined : selection;
+  explorer.open(prepareExploreInput(source, rooted, reduction, project, view), scope, selectedId, scope === 'drawing' ? 'inspect-view-btn' : 'explore-view-btn');
+}
+on('explore-view-btn', () => openExplore('source'));
+on('inspect-view-btn', () => openExplore('drawing'));
 on('learn-view-btn', () => {
   if (!ready || importing || pendingReduction || pendingFit || fitPreview || workers.size || structuredController.pending || structuredController.preview) throw new Error('Finish calculations and keep or discard the current preview before opening Learn.');
   learner.open();
@@ -1029,6 +1035,6 @@ async function initialize(): Promise<void> {
   const recipe: Recipe = { ...defaultRecipe(source), ...fixture }; rooted = orient(source, recipe.root); reduction = reduce(source, rooted, recipe, true);
   project = { format: 'phylogenetic-tree-studio', version: 1, appVersion: '0.1.0', title: 'The tree of life', sourceText: source.text, sourceSha256: source.sha256, provenance, corrections, recipe, layout: generateLayout(rooted, reduction, DEFAULT_PRESENTATION, 'organic'), presentation: structuredClone(DEFAULT_PRESENTATION) };
   syncRecipe(); project = startAuthoring(project, source, exportingBuild, 'new', ['newick-parser', 'maximal-frontier', 'organic-initializer']);
-  syncRecipe(); scientificLayout = generateLayout(rooted, reduction, project.presentation, 'scientific', project.layout); ready = true; $('loading').hidden = true; render(); fit();
+  syncRecipe();  ready = true; $('loading').hidden = true; render(); fit();
 }
 void initialize().catch(error => { $('loading').textContent = `Could not start: ${error.message}`; toast(error.message, true); });
